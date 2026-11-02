@@ -11,13 +11,22 @@ export interface Fila {
   ultimaArriba: boolean;
 }
 
+/** Lo que trae la ficha de un componente, como lo guarda el envío del emisor (ADR-0015). */
+export interface Ficha {
+  nombre: string;
+  es?: string;
+  en?: string;
+}
+
 /** Deja en D1 estos componentes y estas filas de historia, y nada más. */
-export async function sembrar(componentes: [string, string][], filas: Fila[]): Promise<void> {
+export async function sembrar(componentes: [string, string, Ficha?][], filas: Fila[]): Promise<void> {
   await env.DB.batch([
     env.DB.prepare('DELETE FROM historia'),
     env.DB.prepare('DELETE FROM componentes'),
-    ...componentes.map(([stack, url]) =>
-      env.DB.prepare('INSERT INTO componentes (stack, url) VALUES (?1, ?2)').bind(stack, url),
+    ...componentes.map(([stack, url, ficha]) =>
+      env.DB.prepare(
+        'INSERT INTO componentes (stack, url, nombre, descripcion_es, descripcion_en) VALUES (?1, ?2, ?3, ?4, ?5)',
+      ).bind(stack, url, ficha?.nombre ?? null, ficha?.es ?? null, ficha?.en ?? null),
     ),
     ...filas.map((fila) =>
       env.DB.prepare(

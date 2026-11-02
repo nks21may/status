@@ -57,7 +57,7 @@ describe('el MCP', () => {
     await sembrar(
       [
         ['museo', MUSEO],
-        ['neonduel', NEONDUEL],
+        ['neonduel', NEONDUEL, {nombre: 'Neonduel', en: 'A 1v1 browser 3D shooter.'}],
       ],
       [
         {stack: 'museo', dia: '2026-10-30', medidos: 1440, arriba: 1380, latenciaMs: 190, sondaEn: '2026-10-30T23:59:00Z', ultimaArriba: true},
@@ -122,12 +122,14 @@ describe('el MCP', () => {
     expect(JSON.parse(resultado.content[0]?.text ?? '')).toEqual(api);
   });
 
-  it('el estado de un componente es el de la API, sin la lista de días', async () => {
+  it('el estado de un componente es el de la API, con su ficha y sin la lista de días', async () => {
     const resultado = await llamarTool('get_component', {component: 'neonduel'});
 
     expect(resultado.isError).toBeFalsy();
     expect(resultado.structuredContent).toEqual({
       id: 'neonduel',
+      name: 'Neonduel',
+      description: {en: 'A 1v1 browser 3D shooter.', es: null},
       url: NEONDUEL,
       status: 'down',
       last_check: {at: '2026-11-02T13:05:00.000Z', up: false, latency_ms: 41},

@@ -22,6 +22,10 @@ export interface SondaPublica {
 
 export interface ComponentePublico {
   id: string;
+  /** El nombre de la ficha (ADR-0015), o `null` si el emisor todavía no la mandó. */
+  name: string | null;
+  /** La descripción de la ficha en cada idioma, `null` en el que no trae. */
+  description: {en: string | null; es: string | null};
   url: string;
   status: EstadoDeComponente;
   last_check: SondaPublica | null;

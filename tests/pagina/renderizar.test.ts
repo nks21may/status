@@ -20,6 +20,8 @@ function estadoConUnoCaido(): EstadoPublico {
     components: [
       {
         id: 'museo',
+        name: null,
+        description: {en: null, es: null},
         url: 'https://museo.nicolasdalessandro.dev/',
         status: 'up',
         last_check: {at: '2026-11-02T13:05:00.000Z', up: true, latency_ms: 182},
@@ -28,6 +30,8 @@ function estadoConUnoCaido(): EstadoPublico {
       },
       {
         id: 'neonduel',
+        name: null,
+        description: {en: null, es: null},
         url: 'https://neonduel.nicolasdalessandro.dev/',
         status: 'down',
         last_check: {at: '2026-11-02T13:05:00.000Z', up: false, latency_ms: 41},
@@ -84,6 +88,24 @@ describe('la página', () => {
     expect(leido).toContain('Caído');
     expect(leido).toContain('99,71 %');
     expect(leido).toContain('5 ago – 2 nov 2026 · 90 días');
+  });
+
+  it('con la ficha, muestra el nombre y la descripción en el idioma elegido, o en el otro si trae uno solo', () => {
+    const estado = estadoConUnoCaido();
+    const [museo, neonduel] = estado.components;
+    estado.components = [
+      {...museo!, name: 'Museo', description: {en: 'Shaders browsed like TV channels.', es: 'Shaders como canales de tele.'}},
+      {...neonduel!, name: 'Neonduel', description: {en: 'A 1v1 browser 3D shooter.', es: null}},
+    ];
+
+    const enEspanol = texto(renderizar(estado, 'es'));
+    expect(enEspanol).toContain('Neonduel está caído.');
+    expect(enEspanol).toContain('Museo museo.nicolasdalessandro.dev Shaders como canales de tele.');
+    expect(enEspanol).toContain('Neonduel neonduel.nicolasdalessandro.dev A 1v1 browser 3D shooter.');
+    expect(enEspanol).not.toContain('Shaders browsed like TV channels.');
+
+    const enIngles = texto(renderizar(estado, 'en'));
+    expect(enIngles).toContain('Museo museo.nicolasdalessandro.dev Shaders browsed like TV channels.');
   });
 
   it('cuando todo anda, lo dice en una línea', () => {

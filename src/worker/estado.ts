@@ -11,6 +11,9 @@ const DIA_MS = 86_400_000;
 interface FilaComponente {
   stack: string;
   url: string;
+  nombre: string | null;
+  descripcion_es: string | null;
+  descripcion_en: string | null;
 }
 
 interface FilaDia {
@@ -51,7 +54,9 @@ function estadoDeAhora(sonda: SondaPublica | null, ahora: number): EstadoDeCompo
 export async function leerEstado(db: D1Database, ahora: number): Promise<EstadoPublico> {
   const fechas = Array.from({length: DIAS}, (_, indice) => diaUtc(ahora - (DIAS - 1 - indice) * DIA_MS));
   const [{results: componentes}, {results: filasDias}, {results: ultimas}] = await Promise.all([
-    db.prepare('SELECT stack, url FROM componentes ORDER BY stack').all<FilaComponente>(),
+    db
+      .prepare('SELECT stack, url, nombre, descripcion_es, descripcion_en FROM componentes ORDER BY stack')
+      .all<FilaComponente>(),
     db
       .prepare(
         'SELECT stack, dia, minutos_medidos, minutos_arriba FROM historia WHERE dia BETWEEN ?1 AND ?2',
@@ -69,7 +74,7 @@ export async function leerEstado(db: D1Database, ahora: number): Promise<EstadoP
   }
   const ultimaPorStack = new Map(ultimas.map((fila) => [fila.stack, fila]));
 
-  const componentesPublicos = componentes.map(({stack, url}): ComponentePublico => {
+  const componentesPublicos = componentes.map(({stack, url, nombre, descripcion_es, descripcion_en}): ComponentePublico => {
     const delStack = diasPorStack.get(stack);
     const dias = fechas.map((fecha) => {
       const fila = delStack?.get(fecha);
@@ -87,6 +92,8 @@ export async function leerEstado(db: D1Database, ahora: number): Promise<EstadoP
       : null;
     return {
       id: stack,
+      name: nombre,
+      description: {en: descripcion_en, es: descripcion_es},
       url,
       status: estadoDeAhora(sonda, ahora),
       last_check: sonda,

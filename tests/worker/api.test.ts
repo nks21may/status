@@ -11,6 +11,8 @@ interface Dia {
 
 interface Componente {
   id: string;
+  name: string | null;
+  description: {en: string | null; es: string | null};
   url: string;
   status: string;
   last_check: {at: string; up: boolean; latency_ms: number} | null;
@@ -65,7 +67,16 @@ describe('la API de estado', () => {
     expect(estado.components.map((componente) => componente.id)).toEqual(['museo', 'neonduel']);
 
     const [museo, neonduel] = estado.components;
-    expect(Object.keys(museo ?? {}).sort()).toEqual(['days', 'id', 'last_check', 'status', 'uptime_90d', 'url']);
+    expect(Object.keys(museo ?? {}).sort()).toEqual([
+      'days',
+      'description',
+      'id',
+      'last_check',
+      'name',
+      'status',
+      'uptime_90d',
+      'url',
+    ]);
     expect(museo).toMatchObject({
       id: 'museo',
       url: MUSEO,
@@ -87,6 +98,25 @@ describe('la API de estado', () => {
       last_check: {at: '2026-11-02T13:05:00.000Z', up: false, latency_ms: 41},
       uptime_90d: 761 / 785,
     });
+  });
+
+  it('cada componente trae el nombre y la descripción de su ficha, y sin ficha todavía, nulos', async () => {
+    await sembrar(
+      [
+        ['bot_discord', 'https://audio.example/', {nombre: 'Audio', en: 'Pipes audio into Discord.'}],
+        ['museo', MUSEO, {nombre: 'Museo', es: 'Shaders como canales de tele.', en: 'Shaders browsed like TV channels.'}],
+        ['neonduel', NEONDUEL],
+      ],
+      [],
+    );
+
+    const {estado} = await pedirEstado('2026-11-02T13:05:42Z');
+
+    expect(estado.components.map(({id, name, description}) => ({id, name, description}))).toEqual([
+      {id: 'bot_discord', name: 'Audio', description: {en: 'Pipes audio into Discord.', es: null}},
+      {id: 'museo', name: 'Museo', description: {en: 'Shaders browsed like TV channels.', es: 'Shaders como canales de tele.'}},
+      {id: 'neonduel', name: null, description: {en: null, es: null}},
+    ]);
   });
 
   it('un componente sin medición reciente sale sin datos, no como arriba', async () => {

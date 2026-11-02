@@ -37,7 +37,8 @@ const TOOLS = [
   {
     name: 'get_component',
     title: 'Component status',
-    description: 'Current status of one project (up, down or no_data), its last check and its 90-day uptime.',
+    description:
+      'Current status of one project (up, down or no_data), its name and description, its last check and its 90-day uptime.',
     inputSchema: {type: 'object', properties: {component: COMPONENTE}, required: ['component'], additionalProperties: false},
     annotations: SOLO_LECTURA,
   },
@@ -132,8 +133,8 @@ async function llamarTool(params: Objeto, leer: () => Promise<EstadoPublico>): P
     return errorDeTool(componente);
   }
   if (nombre === 'get_component') {
-    const {id, url, status, last_check, uptime_90d} = componente;
-    return resultado({id, url, status, last_check, uptime_90d});
+    const {id, name, description, url, status, last_check, uptime_90d} = componente;
+    return resultado({id, name, description, url, status, last_check, uptime_90d});
   }
 
   // Si falta, van los 90; un `null` no es que falte, es un valor que no sirve.

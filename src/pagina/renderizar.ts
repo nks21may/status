@@ -37,6 +37,17 @@ export function escapar(texto: string): string {
     .replaceAll("'", '&#39;');
 }
 
+/** El nombre de la ficha; hasta que el emisor la manda, el id del componente. */
+function nombreDe(componente: ComponentePublico): string {
+  return componente.name ?? componente.id;
+}
+
+/** La descripción en el idioma elegido, o en el otro si la ficha trae uno solo. */
+function descripcionDe(componente: ComponentePublico, idioma: Idioma): string | null {
+  const otro = idioma === 'en' ? 'es' : 'en';
+  return componente.description[idioma] ?? componente.description[otro];
+}
+
 /** El ancla del renglón de un componente, para llegar desde el estado general. */
 function ancla(id: string): string {
   const limpio = id
@@ -161,7 +172,7 @@ function resumen(estado: EstadoPublico | null, idioma: Idioma): string {
   const nombres = (cual: ComponentePublico['status']) =>
     componentes
       .filter((componente) => componente.status === cual)
-      .map((componente) => `<a href="#${ancla(componente.id)}">${escapar(componente.id)}</a>`);
+      .map((componente) => `<a href="#${ancla(componente.id)}">${escapar(nombreDe(componente))}</a>`);
   const caidos = nombres('down');
   const sinLectura = nombres('no_data');
   const [frase, clase] =
@@ -191,8 +202,8 @@ function copiar(texto: string, idioma: Idioma): string {
 
 function renglon(componente: ComponentePublico, hoy: string, idioma: Idioma): string {
   const textos = TEXTOS[idioma];
-  // Hasta que el emisor mande la ficha (S4), el nombre es el id del componente.
-  const nombre = escapar(componente.id);
+  const nombre = escapar(nombreDe(componente));
+  const descripcion = descripcionDe(componente, idioma);
   const segura = /^https?:\/\//.test(componente.url);
   let host = componente.url;
   try {
@@ -209,7 +220,8 @@ function renglon(componente: ComponentePublico, hoy: string, idioma: Idioma): st
         <div class="servicio__fila">
           <div class="servicio__identidad">
             <h3 class="servicio__nombre">${segura ? `<a href="${escapar(componente.url)}">${nombre}</a>` : nombre}</h3>
-            <p class="servicio__direccion">${escapar(host)}</p>
+            <p class="servicio__direccion">${escapar(host)}</p>${descripcion ? `
+            <p class="servicio__descripcion">${escapar(descripcion)}</p>` : ''}
           </div>
           <dl class="servicio__datos">
             <div class="dato">
@@ -228,7 +240,7 @@ function renglon(componente: ComponentePublico, hoy: string, idioma: Idioma): st
         </div>
         <div class="consumo">
           <div class="consumo__eje" aria-hidden="true"><span>${idioma === 'en' ? '100%' : '100 %'}</span><span>${idioma === 'en' ? '95%' : '95 %'}</span></div>
-          <div class="grafico" role="slider" tabindex="0" aria-label="${escapar(textos.grafico(componente.id))}" aria-valuemin="1" aria-valuemax="${componente.days.length}" aria-valuenow="${componente.days.length}">
+          <div class="grafico" role="slider" tabindex="0" aria-label="${escapar(textos.grafico(nombreDe(componente)))}" aria-valuemin="1" aria-valuemax="${componente.days.length}" aria-valuenow="${componente.days.length}">
             ${componente.days.map((dia) => barra(dia, idioma)).join('')}
           </div>
           <div class="consumo__meses" aria-hidden="true">${meses(componente.days, idioma)}</div>
