@@ -140,7 +140,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       Ver [ADR-0011](adr/0011-la-api-publica-de-estado.md) (lo que trae S4 entra como campos nuevos)
       y [ADR-0015](adr/0015-el-envio-del-emisor.md).
 
-- [ ] **S9 — La salud de adentro se ve en la API, la página y el MCP.** *Depende de S4.*
+- [x] **S9 — La salud de adentro se ve en la API, la página y el MCP.** *Depende de S4.*
       *Test:* con un envío de hace menos de 5 minutos, la API trae `inside` en cada componente, y un
       componente con la URL arriba y algo de adentro no sano sale `degraded`; sin envío en los
       últimos 5 minutos, `inside` sale `no_data` y el estado vuelve a salir de afuera. La página

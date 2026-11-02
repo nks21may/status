@@ -1157,3 +1157,91 @@ GATE_EXIT=0
 ```
 
 **Sha:** `982c791`
+
+## S9 — La salud de adentro se ve en la API, la página y el MCP · 2026-11-02
+
+**Archivos:**
+- Código: `src/estado.ts`, `src/worker/estado.ts`, `src/worker/mcp.ts`,
+  `src/pagina/renderizar.ts`, `src/pagina/textos.ts` y `public/estilos.css`.
+- Diseño: `DESIGN.md` y `.impeccable/design.json`.
+- Tests: `tests/worker/api.test.ts`, `tests/worker/mcp.test.ts`, `tests/pagina/renderizar.test.ts`
+  y `tests/worker/sembrar.ts`, que ahora también siembra la salud de adentro y la hora del envío.
+- En el commit siguiente: `docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`
+
+**Las decisiones, primero.** El usuario decidió las dos cosas que S9 esperaba, y quedaron en
+[ADR-0016](adr/0016-el-estado-con-fallas-y-el-corte-del-emisor.md), en su propio commit
+(`89a1bda`):
+- **Un estado más:** un servicio con la URL arriba y algo de adentro no sano sale `degraded`
+  ("Degraded" / "Con fallas").
+- **El corte:** lo de adentro sale sin datos si el último envío tiene más de 5 minutos.
+
+**El diseño, con impeccable** (ADR-0008). Es una extensión del mundo de `DESIGN.md`, sin ronda de
+direcciones:
+- **La palabra** va en bermellón, porque algo está caído, aunque sea adentro.
+- **La marca** va partida, con la mitad de arriba en bermellón y la de abajo en negro. Es la misma
+  gramática que la barra de un día con un corte.
+- **El estado general** nombra primero lo caído y después lo que anda con fallas.
+
+Lo miré en una sola tanda, en escritorio claro, escritorio oscuro y celular oscuro. El detector
+sobre `public/estilos.css` sólo marcó los tamaños sueltos que ya estaban parkeados.
+
+**Dos tests de antes cambiaron, porque cambió el contrato que fijaban:**
+- la lista exacta de campos de la API suma `inside`;
+- el resultado exacto de `get_component` también.
+
+**Rojo**, el esperado: la respuesta de la API no trae la salud de adentro, y la página no conoce el
+estado nuevo. Los 40 tests restantes siguieron en verde. El gate corta en `tsc`:
+
+```
+tests/pagina/renderizar.test.ts(25,9): error TS2353: Object literal may only specify known properties, and 'inside' does not exist in type 'ComponentePublico'.
+tests/pagina/renderizar.test.ts(36,9): error TS2353: Object literal may only specify known properties, and 'inside' does not exist in type 'ComponentePublico'.
+tests/pagina/renderizar.test.ts(116,53): error TS2322: Type '"degraded"' is not assignable to type 'EstadoDeComponente'.
+```
+
+Y `npx vitest run`:
+
+```
+     × un componente con fallas adentro dice Degraded o Con fallas, y el estado general lo nombra 8ms
+     × da el estado de ahora y los 90 días de cada componente, en inglés y sin campos internos 27ms
+     × con un envío reciente trae la salud de adentro, y la URL arriba con algo de adentro no sano sale degraded 25ms
+     × sin envío en los últimos 5 minutos, lo de adentro sale sin datos y el estado vuelve a salir de afuera 24ms
+     × el estado de un componente es el de la API, con su ficha y sin la lista de días 31ms
+ Test Files  3 failed | 5 passed (8)
+      Tests  5 failed | 40 passed (45)
+```
+
+**A mano, en local.** Con `wrangler dev`, el emisor de verdad mandó `bot_discord` con un contenedor
+no sano, y sembré sondas recientes. La API devolvió:
+
+```
+[('bot_discord', 'degraded', 'unhealthy'), ('museo', 'up', 'healthy'), ('neonduel', 'down', 'no_data')]
+```
+
+La página dijo "Neonduel is down. Audio is degraded.", con Audio en "Degraded" y su marca partida.
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  8 passed (8)
+      Tests  45 passed (45)
+   Start at  16:28:39
+   Duration  1.46s (transform 259ms, setup 570ms, import 273ms, tests 1.08s, environment 1ms)
+
+GATE_EXIT=0
+```
+
+**Sha:** `2f5ac23`
