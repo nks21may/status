@@ -97,7 +97,7 @@ Chequea dos programas de TypeScript: el de Node (`tsconfig.json`) y el del Worke
 
 ### Lo que salió de S1
 
-- [ ] **S5 — Sin componentes, el cron termina sin escribir y sin error.** *Depende de S1.*
+- [x] **S5 — Sin componentes, el cron termina sin escribir y sin error.** *Depende de S1.*
       *Test:* con la tabla de componentes vacía (lo normal hasta el primer envío de S4), una
       corrida del handler `scheduled` resuelve y no deja filas en la historia.
       **Se espera rojo:** `D1_ERROR: No SQL statements detected.`: `sondear` le pasa a `batch` una

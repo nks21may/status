@@ -388,3 +388,93 @@ EXIT=0
 ```
 
 **Sha:** `2c9bed5`
+
+---
+
+## S5 — Sin componentes, el cron termina sin escribir y sin error · 2026-11-02
+
+**Archivos:** `src/worker/sondas.ts`, `tests/worker/sondas.test.ts`. En el commit siguiente,
+`docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`
+
+Sin ADR: no hay decisión estructural. `sondear` vuelve antes de sondear si no hay componentes,
+porque D1 no acepta un `batch` vacío.
+
+**Rojo**, el esperado (el mismo que dio el test descartable de S1):
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+ ❯ |worker| tests/worker/sondas.test.ts (4 tests | 1 failed) 237ms
+     × sin componentes, la corrida termina sin escribir y sin error 28ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |worker| tests/worker/sondas.test.ts > el cron de las sondas > sin componentes, la corrida termina sin escribir y sin error
+Error: D1_ERROR: No SQL statements detected.
+ ❯ D1DatabaseSessionAlwaysPrimary._sendOrThrow cloudflare-internal:d1-api:193:19
+ ❯ cloudflare-internal:d1-api:142:19
+ ❯ sondear src/worker/sondas.ts:47:3
+     45|   const dia = diaUtc(hora);
+     46|   const sumar = db.prepare(SUMAR_MINUTO);
+     47|   await db.batch(
+       |   ^
+     48|     sondas.map(({stack, arriba, latenciaMs}) => sumar.bind(stack, dia,…
+     49|   );
+ ❯ Object.scheduled src/worker/index.ts:7:5
+ ❯ correrCron tests/worker/sondas.test.ts:31:3
+ ❯ tests/worker/sondas.test.ts:114:5
+
+Caused by: Error: No SQL statements detected.
+ ❯ D1DatabaseSessionAlwaysPrimary._sendOrThrow cloudflare-internal:d1-api:194:24
+ ❯ cloudflare-internal:d1-api:142:19
+ ❯ sondear src/worker/sondas.ts:47:3
+ ❯ Object.scheduled src/worker/index.ts:7:5
+ ❯ correrCron tests/worker/sondas.test.ts:31:3
+ ❯ tests/worker/sondas.test.ts:114:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 4 passed (5)
+   Start at  11:30:36
+   Duration  797ms (transform 28ms, setup 41ms, import 39ms, tests 239ms, environment 0ms)
+
+EXIT=1
+```
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  2 passed (2)
+      Tests  5 passed (5)
+   Start at  11:30:46
+   Duration  792ms (transform 28ms, setup 43ms, import 32ms, tests 224ms, environment 0ms)
+
+EXIT=0
+```
+
+**Sha:** `d82cf74`
