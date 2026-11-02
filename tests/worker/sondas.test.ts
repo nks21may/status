@@ -5,6 +5,10 @@ import worker from '../../src/worker/index.ts';
 
 const MUSEO = 'https://museo.example/';
 const NEONDUEL = 'https://neonduel.example/';
+const NONOGRAMA = 'https://nonograma.example/';
+
+/** Lo que espera una sonda antes de darse por vencida: el timeout de `http_2xx` en blackbox. */
+const TIMEOUT_MS = 10_000;
 
 /** Cuánto tarda en contestar la URL que anda, en la sonda simulada. */
 const DEMORA_MS = 40;
@@ -60,6 +64,7 @@ describe('el cron de las sondas', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -114,5 +119,42 @@ describe('el cron de las sondas', () => {
     await correrCron('2026-11-02T13:05:00Z');
 
     expect(await leerHistoria()).toEqual([]);
+  });
+
+  it('una sonda que no contesta cuenta como minuto abajo y no corta las demás', async () => {
+    await env.DB.prepare('INSERT INTO componentes (stack, url) VALUES (?1, ?2)')
+      .bind('nonograma', NONOGRAMA)
+      .run();
+    // Sólo los timers: el reloj de las latencias sigue siendo el de verdad.
+    vi.useFakeTimers({toFake: ['setTimeout', 'clearTimeout']});
+    let avisarPregunta = (): void => {};
+    const nonogramaPreguntado = new Promise<void>((resolver) => {
+      avisarPregunta = resolver;
+    });
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (entrada, init) => {
+      const url = entrada instanceof Request ? entrada.url : String(entrada);
+      if (url === MUSEO) {
+        return new Response('ok', {status: 200});
+      }
+      if (url === NEONDUEL) {
+        throw new TypeError('Network connection lost.');
+      }
+      // Nonograma no contesta: el pedido sólo termina si la sonda lo corta.
+      avisarPregunta();
+      return new Promise<Response>((_, rechazar) => {
+        init?.signal?.addEventListener('abort', () => rechazar(init.signal?.reason));
+      });
+    });
+
+    await Promise.all([
+      correrCron('2026-11-02T13:05:00Z'),
+      nonogramaPreguntado.then(() => vi.advanceTimersByTimeAsync(TIMEOUT_MS)),
+    ]);
+
+    expect(await leerHistoria()).toMatchObject([
+      {stack: 'museo', dia: '2026-11-02', minutos_medidos: 1, minutos_arriba: 1},
+      {stack: 'neonduel', dia: '2026-11-02', minutos_medidos: 1, minutos_arriba: 0},
+      {stack: 'nonograma', dia: '2026-11-02', minutos_medidos: 1, minutos_arriba: 0},
+    ]);
   });
 });

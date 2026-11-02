@@ -20,11 +20,26 @@ const SUMAR_MINUTO = `
     minutos_arriba = minutos_arriba + excluded.minutos_arriba,
     ultima_latencia_ms = excluded.ultima_latencia_ms`;
 
-/** Prueba la URL: arriba si contesta 2xx, después de seguir las redirecciones (ADR-0009). */
+/** Lo que espera una sonda antes de darse por vencida: el timeout de `http_2xx` en blackbox. */
+const TIMEOUT_MS = 10_000;
+
+/**
+ * Prueba la URL: arriba si contesta 2xx, después de seguir las redirecciones (ADR-0009). Un error
+ * de red o un pedido que pasa el timeout cuentan como abajo, sin cortar las otras sondas.
+ */
 async function probar({stack, url}: Componente): Promise<Sonda> {
   const inicio = Date.now();
-  const respuesta = await fetch(url);
-  return {stack, arriba: respuesta.ok, latenciaMs: Date.now() - inicio};
+  // Con setTimeout y no con AbortSignal.timeout, que los timers simulados del test no adelantan.
+  const corte = new AbortController();
+  const temporizador = setTimeout(() => corte.abort(), TIMEOUT_MS);
+  try {
+    const respuesta = await fetch(url, {signal: corte.signal});
+    return {stack, arriba: respuesta.ok, latenciaMs: Date.now() - inicio};
+  } catch {
+    return {stack, arriba: false, latenciaMs: Date.now() - inicio};
+  } finally {
+    clearTimeout(temporizador);
+  }
 }
 
 /** El día UTC de una hora en milisegundos, como `AAAA-MM-DD`. */
