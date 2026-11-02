@@ -15,6 +15,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0005](0005-ingles-por-defecto-y-espanol.md) | Inglés por defecto y español; el MCP, en inglés | aceptado |
 | [0006](0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) | El MCP es remoto, público, sin login y de sólo lectura | aceptado |
 | [0007](0007-los-componentes-salen-del-catalogo-del-hub.md) | Los componentes salen del catálogo del hub, y los manda el emisor | aceptado |
+| [0008](0008-la-pagina-se-disena-con-impeccable.md) | La página se diseña con la skill `impeccable`, antes de S2 | aceptado |
 
 ## Cuándo escribir uno
 

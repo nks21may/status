@@ -57,7 +57,9 @@ npm run gate
       ([ADR-0001](adr/0001-typescript-vitest-4-y-gate-en-el-host.md)). Ver
       [ADR-0002](adr/0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md).
 
-- [ ] **S2 — La API pública da el estado y los 90 días de cada componente, y la página lo muestra.** *Depende de S1.*
+- [ ] **S2 — La API pública da el estado y los 90 días de cada componente, y la página lo muestra.** *Depende de S1, y
+      de que existan `PRODUCT.md` y `DESIGN.md` ([ADR-0008](adr/0008-la-pagina-se-disena-con-impeccable.md)):
+      hasta entonces, no es tomable.*
       *Test:* con D1 sembrado, el `GET` de la API de estado contesta 200 con una entrada por
       componente: su estado actual y una por cada uno de los últimos 90 días, en inglés y sin campos
       internos. Un componente sin sonda en los últimos minutos sale sin datos, no como arriba. La

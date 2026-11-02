@@ -41,6 +41,9 @@ aunque los tests pasen.
 7. **Los componentes salen del catálogo del hub**: un componente es una ficha visible, y la lista
    la manda el emisor. Ningún componente se escribe a mano en este repo.
    [ADR-0007](docs/adr/0007-los-componentes-salen-del-catalogo-del-hub.md)
+8. **El diseño de la página sale de `PRODUCT.md` y `DESIGN.md`**, escritos con `impeccable` antes
+   de S2. Un color, una tipografía o un espaciado que no sale de ahí es un hallazgo de review.
+   [ADR-0008](docs/adr/0008-la-pagina-se-disena-con-impeccable.md)
 
 ## Convenciones
 
