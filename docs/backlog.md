@@ -112,7 +112,7 @@ Chequea dos programas de TypeScript: el de Node (`tsconfig.json`) y el del Worke
       Ver [ADR-0009](adr/0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md): el timeout
       de 10 s es el de `http_2xx` en blackbox.
 
-- [ ] **S7 — Una corrida repetida para el mismo minuto no suma dos veces.** *Depende de S1.*
+- [x] **S7 — Una corrida repetida para el mismo minuto no suma dos veces.** *Depende de S1.*
       *Test:* dos corridas con la misma hora programada dejan un minuto medido, no dos.
       **Se espera rojo:** `minutos_medidos` queda en 2.
       Es el "en contra" de [ADR-0009](adr/0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md),

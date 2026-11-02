@@ -575,3 +575,107 @@ Error: Test timed out in 5000ms.
 ```
 
 **Sha:** `ac53841`
+
+---
+
+## S7 — Una corrida repetida para el mismo minuto no suma dos veces · 2026-11-02
+
+**Archivos:** `migrations/0002_hora_de_la_ultima_sonda.sql`, `src/worker/sondas.ts`,
+`tests/worker/sondas.test.ts`. En el commit siguiente, `docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`
+
+Sin ADR nuevo: ADR-0009 ya pone la última sonda en la fila del día y nombra este caso como
+pendiente. La migración `0002` le suma a `historia` la hora programada de la última corrida que
+sumó (`ultima_sonda_en`, en milisegundos), y el upsert sólo suma si la corrida es **posterior** a
+ésa. Así la hora y la latencia de la última sonda siempre son las más nuevas. El costo: si dos
+corridas se pisan y la más vieja termina después, su minuto no cuenta. Con sondas de 10 s como
+mucho y un cron por minuto, una corrida tendría que empezar 50 s tarde para que pase.
+
+**Rojo**, el esperado: `minutos_medidos` queda en 2.
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+ ❯ |worker| tests/worker/sondas.test.ts (6 tests | 1 failed) 294ms
+     × una corrida repetida para el mismo minuto no suma dos veces 37ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |worker| tests/worker/sondas.test.ts > el cron de las sondas > una corrida repetida para el mismo minuto no suma dos veces
+AssertionError: expected [ { stack: 'museo', …(4) }, …(1) ] to match object [ { stack: 'museo', …(3) }, …(1) ]
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  [
+    {
+      "dia": "2026-11-02",
+-     "minutos_arriba": 1,
+-     "minutos_medidos": 1,
++     "minutos_arriba": 2,
++     "minutos_medidos": 2,
+      "stack": "museo",
+    },
+    {
+      "dia": "2026-11-02",
+      "minutos_arriba": 0,
+-     "minutos_medidos": 1,
++     "minutos_medidos": 2,
+      "stack": "neonduel",
+    },
+  ]
+
+ ❯ tests/worker/sondas.test.ts:167:34
+    165|     await correrCron('2026-11-02T13:05:00Z');
+    166|
+    167|     expect(await leerHistoria()).toMatchObject([
+       |                                  ^
+    168|       {stack: 'museo', dia: '2026-11-02', minutos_medidos: 1, minutos_…
+    169|       {stack: 'neonduel', dia: '2026-11-02', minutos_medidos: 1, minut…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 6 passed (7)
+   Start at  11:33:06
+   Duration  827ms (transform 27ms, setup 41ms, import 31ms, tests 296ms, environment 0ms)
+
+EXIT=1
+```
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  11:33:21
+   Duration  815ms (transform 27ms, setup 48ms, import 31ms, tests 269ms, environment 0ms)
+
+EXIT=0
+```
+
+**Sha:** `91f2e48`
