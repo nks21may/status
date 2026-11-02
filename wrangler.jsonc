@@ -24,8 +24,7 @@
     {
       "binding": "DB",
       "database_name": "status",
-      // El esquema es el de ADR-0009, en migraciones de Wrangler. El database_id de la base remota se
-      // anota acá cuando el usuario la crea, uno de los pasos de una vez de ADR-0017.
+      "database_id": "eceb51e2-ba6c-4c37-9c85-24fae19dad11",
       "migrations_dir": "migrations"
     }
   ]
