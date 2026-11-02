@@ -1,0 +1,11 @@
+{
+  // La página corre en el navegador: ve los globales del DOM y no los de Node ni los de workerd
+  // (ADR-0012).
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": []
+  },
+  "include": ["src/pagina"],
+  "exclude": []
+}

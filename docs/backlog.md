@@ -36,9 +36,11 @@ son de ella, se anotan acá y **no** entran en su commit.
 npm run gate
 ```
 
-Chequea dos programas de TypeScript: el de Node (`tsconfig.json`) y el del Worker
+Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worker
 (`tsconfig.worker.json`), que ve los globales de workerd y no los de Node
-([ADR-0010](adr/0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md)).
+([ADR-0010](adr/0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md)), y el de la página
+(`tsconfig.pagina.json`), que ve los del DOM
+([ADR-0012](adr/0012-la-pagina-la-arma-el-navegador.md)).
 
 ---
 

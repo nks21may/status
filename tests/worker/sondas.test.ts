@@ -158,6 +158,20 @@ describe('el cron de las sondas', () => {
     ]);
   });
 
+  it('la última sonda guarda si dio arriba', async () => {
+    simularUrls(0);
+
+    await correrCron('2026-11-02T13:05:00Z');
+
+    const {results} = await env.DB.prepare(
+      'SELECT stack, ultima_arriba FROM historia ORDER BY stack',
+    ).all<{stack: string; ultima_arriba: number}>();
+    expect(results).toEqual([
+      {stack: 'museo', ultima_arriba: 1},
+      {stack: 'neonduel', ultima_arriba: 0},
+    ]);
+  });
+
   it('una corrida repetida para el mismo minuto no suma dos veces', async () => {
     simularUrls(0);
 

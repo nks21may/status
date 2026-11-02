@@ -17,3 +17,6 @@ diseno/maqueta/lectura.js
 
 # Las páginas de decisión de impeccable: son de la sesión, no del repo.
 .impeccable/questions/
+
+# El código de la página lo empaqueta `npm run build:pagina` (ADR-0012).
+public/pagina.js

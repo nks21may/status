@@ -4,6 +4,16 @@
   "main": "src/worker/index.ts",
   // La del workerd que trae @cloudflare/vitest-plugin: no puede ser posterior (ADR-0010).
   "compatibility_date": "2026-11-01",
+  // La página: archivos estáticos que no pasan por el Worker (ADR-0012). Lo que no es un archivo de
+  // public/, como /api/status, va al Worker, que le devuelve a ASSETS lo que no es suyo.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  // El código de la página se empaqueta antes de `wrangler dev` y de `wrangler deploy` (ADR-0012).
+  "build": {
+    "command": "npm run build:pagina"
+  },
   // Una corrida por minuto prueba cada URL pública (ADR-0002).
   "triggers": {
     "crons": ["* * * * *"]

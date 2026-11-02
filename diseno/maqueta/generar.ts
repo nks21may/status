@@ -1,8 +1,8 @@
 /**
  * Genera la maqueta de la página de status (ADR-0008) con **datos de demostración**: las fichas son
  * las reales del catálogo de `infra`, pero los minutos, las latencias y los estados son inventados
- * y no son mediciones. Escribe tres escenarios en los dos idiomas, y `lectura.js` desde
- * `lectura.ts`:
+ * y no son mediciones. Escribe tres escenarios en los dos idiomas, y empaqueta `lectura.ts` como
+ * `lectura.js`. El CSS y las tipografías son los de la página, en `public/` (ADR-0012):
  *
  * - `index.html` y `es.html`: un servicio caído;
  * - `normal.html` y `normal.es.html`: todo anda;
@@ -10,8 +10,8 @@
  *
  * Se corre con `node diseno/maqueta/generar.ts`.
  */
-import {readFileSync, writeFileSync} from 'node:fs';
-import {stripTypeScriptTypes} from 'node:module';
+import {buildSync} from 'esbuild';
+import {writeFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
@@ -431,7 +431,7 @@ function pagina(escenario: Escenario, idioma: Idioma): string {
   const idiomas = (['en', 'es'] as const)
     .map((otro) => {
       const actual = otro === idioma ? ' aria-current="page"' : '';
-      return `<a href="${archivo(escenario, otro)}" lang="${otro}" hreflang="${otro}"${actual}>${otro.toUpperCase()}</a>`;
+      return `<a class="idioma__opcion" href="${archivo(escenario, otro)}" lang="${otro}" hreflang="${otro}"${actual}>${otro.toUpperCase()}</a>`;
     })
     .join('');
   const grilla =
@@ -452,8 +452,9 @@ function pagina(escenario: Escenario, idioma: Idioma): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${textos.titulo} · nicolasdalessandro.dev</title>
   <meta name="color-scheme" content="light dark">
-  <link rel="preload" href="fuentes/chivo-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="estilos.css">
+  <link rel="preload" href="../../public/fuentes/chivo-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../public/estilos.css">
+  <link rel="stylesheet" href="maqueta.css">
   <script src="lectura.js" defer></script>
 </head>
 <body>
@@ -515,5 +516,10 @@ for (const escenario of ['incidente', 'normal', 'sin-datos'] as const) {
     writeFileSync(join(CARPETA, archivo(escenario, idioma)), pagina(escenario, idioma));
   }
 }
-const lectura = readFileSync(join(CARPETA, 'lectura.ts'), 'utf8');
-writeFileSync(join(CARPETA, 'lectura.js'), stripTypeScriptTypes(lectura));
+buildSync({
+  entryPoints: [join(CARPETA, 'lectura.ts')],
+  bundle: true,
+  format: 'iife',
+  target: 'es2022',
+  outfile: join(CARPETA, 'lectura.js'),
+});

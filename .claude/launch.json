@@ -4,8 +4,27 @@
     {
       "name": "maqueta",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "4610", "--bind", "127.0.0.1", "--directory", "diseno/maqueta"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4610",
+        "--bind",
+        "127.0.0.1"
+      ],
       "port": 4610
+    },
+    {
+      "name": "status",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "wrangler",
+        "dev",
+        "--port",
+        "8787",
+        "--ip",
+        "127.0.0.1"
+      ],
+      "port": 8787
     }
   ]
 }

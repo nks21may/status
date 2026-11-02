@@ -1,6 +1,7 @@
 # ADR-0010 — Los tests del Worker usan `@cloudflare/vitest-plugin` con Vitest 4, y el gate chequea dos programas de TypeScript
 
-- **Estado:** aceptado (decidido por el usuario el 2026-11-02)
+- **Estado:** aceptado (decidido por el usuario el 2026-11-02). Los dos programas de TypeScript del
+  gate, reemplazados por [ADR-0012](0012-la-pagina-la-arma-el-navegador.md)
 - **Fecha:** 2026-11-02
 - **Decide:** con qué paquete corren los tests del Worker en workerd, con qué Vitest, y cómo
   chequea los tipos el gate.

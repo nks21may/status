@@ -21,10 +21,11 @@ Cada una tiene un ADR detrás. Un cambio que las viole se rechaza en review,
 aunque los tests pasen.
 
 1. **TypeScript en todo el repo, y el gate es `npm run gate`.** Vitest 4, con los tests del Worker
-   en `workerd` y un D1 local con `@cloudflare/vitest-plugin`; el Worker es un programa de TypeScript
-   aparte, sin los globales de Node; el contrato del POST es un tipo que comparten el emisor y el
-   Worker. [ADR-0001](docs/adr/0001-typescript-vitest-4-y-gate-en-el-host.md) y
-   [ADR-0010](docs/adr/0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md)
+   en `workerd` y un D1 local con `@cloudflare/vitest-plugin`; el Worker y la página son programas
+   de TypeScript aparte, sin los globales de Node; el contrato del POST es un tipo que comparten el
+   emisor y el Worker. [ADR-0001](docs/adr/0001-typescript-vitest-4-y-gate-en-el-host.md),
+   [ADR-0010](docs/adr/0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md) y
+   [ADR-0012](docs/adr/0012-la-pagina-la-arma-el-navegador.md)
 2. **Corre en un Worker de Cloudflare, fuera de la VPS, en el plan Free.** Nada que cobre lo que se
    pasa de su cupo: ni Workers Paid ni R2. Un producto nuevo de Cloudflare entra con un ADR que dice
    su cupo gratis. [ADR-0002](docs/adr/0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md)

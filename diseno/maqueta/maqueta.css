@@ -1,0 +1,26 @@
+/*
+ * Sólo en la maqueta: la banda que avisa que los datos son de demostración. El sistema está en
+ * public/estilos.css (ADR-0012).
+ */
+.aviso {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-1) var(--e-4);
+  align-items: baseline;
+  margin-bottom: var(--e-5);
+  padding-bottom: var(--e-3);
+  border-bottom: 1px dashed var(--tinta);
+}
+
+.aviso__escenarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-1) var(--e-3);
+}
+
+.aviso__escenarios a[aria-current="page"] {
+  text-decoration: none;
+  color: var(--dato);
+}
