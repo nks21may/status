@@ -1,4 +1,5 @@
 import {leerEstado} from './estado.ts';
+import {responderMcp} from './mcp.ts';
 import {sondear} from './sondas.ts';
 
 /**
@@ -6,10 +7,14 @@ import {sondear} from './sondas.ts';
  * (ADR-0012); al Worker llega sólo lo que no es un archivo.
  */
 const worker: ExportedHandler<Cloudflare.Env> = {
-  /** La API pública de estado (ADR-0011). */
+  /** La API pública de estado (ADR-0011) y el MCP (ADR-0013). */
   async fetch(pedido, env) {
-    if (new URL(pedido.url).pathname === '/api/status') {
+    const {pathname} = new URL(pedido.url);
+    if (pathname === '/api/status') {
       return Response.json(await leerEstado(env.DB, Date.now()));
+    }
+    if (pathname === '/mcp') {
+      return responderMcp(pedido, () => leerEstado(env.DB, Date.now()));
     }
     // Lo que no es la API lo contestan los archivos estáticos, con su propio 404.
     return env.ASSETS.fetch(pedido);

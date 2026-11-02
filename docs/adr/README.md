@@ -20,6 +20,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0010](0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md) | Los tests del Worker usan `@cloudflare/vitest-plugin` con Vitest 4; el gate chequea dos programas de TypeScript | aceptado; en parte reemplazado por [0012](0012-la-pagina-la-arma-el-navegador.md) |
 | [0011](0011-la-api-publica-de-estado.md) | La API pública de estado: `GET /api/status`, y qué es "up", "down" y "no_data" | aceptado |
 | [0012](0012-la-pagina-la-arma-el-navegador.md) | La página es un archivo estático que arma el navegador; el gate chequea tres programas de TypeScript | aceptado |
+| [0013](0013-el-mcp-habla-json-rpc-a-mano-y-sus-tools.md) | El MCP habla JSON-RPC a mano, sin el SDK, con tres tools de sólo lectura | aceptado |
 
 ## Cuándo escribir uno
 

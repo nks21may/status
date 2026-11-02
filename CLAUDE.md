@@ -40,7 +40,9 @@ aunque los tests pasen.
    [ADR-0005](docs/adr/0005-ingles-por-defecto-y-espanol.md)
 6. **El MCP es público, sin login y de sólo lectura**, en `/mcp` del mismo Worker y sin estado.
    Ninguna tool escribe ni acepta consultas libres: sólo el nombre de un componente y una cantidad
-   de días, validados. [ADR-0006](docs/adr/0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md)
+   de días, validados. El JSON-RPC está escrito a mano, sin el SDK.
+   [ADR-0006](docs/adr/0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) y
+   [ADR-0013](docs/adr/0013-el-mcp-habla-json-rpc-a-mano-y-sus-tools.md)
 7. **Los componentes salen del catálogo del hub**: un componente es una ficha visible, y la lista
    la manda el emisor. Ningún componente se escribe a mano en este repo.
    [ADR-0007](docs/adr/0007-los-componentes-salen-del-catalogo-del-hub.md)
