@@ -679,3 +679,70 @@ EXIT=0
 ```
 
 **Sha:** `91f2e48`
+
+## Diseño: `PRODUCT.md`, `DESIGN.md` y la maqueta, con impeccable · 2026-11-02
+
+No es un ítem del loop: es la sesión con el usuario que
+[ADR-0008](adr/0008-la-pagina-se-disena-con-impeccable.md) pide antes de S2. La arrancó el usuario
+("Sí, arrancalo"). Con esto S2 deja de esperar el diseño.
+
+**Archivos:**
+- `PRODUCT.md`, `DESIGN.md`, `.impeccable/design.json` y el brief de la superficie en
+  `.impeccable/surfaces/`;
+- las capturas de la revisión en `.impeccable/review/`: escritorio y celular, en claro y en
+  oscuro;
+- `diseno/README.md`, y en `diseno/maqueta/`: `estilos.css`, `generar.ts`, `lectura.ts` y
+  `fuentes/` (Archivo y Chivo Mono, con su OFL);
+- `.claude/launch.json`, `.gitignore`, `README.md` y `docs/backlog.md` (S2).
+
+**Gate:** `npm run gate`
+
+**Lo que decidió el usuario:**
+- **El lector principal** es el que quiere saber si un proyecto anda, desde el celular.
+- **La voz** es sobria y exacta.
+- **El stack** lo delegó, y quedó HTML y CSS a mano con TypeScript sin framework.
+- **La maqueta** va aparte, en `diseno/`: S2 arma la página real con TDD y se lleva el CSS.
+- **Además de los componentes**, la página dice cómo sumar el MCP a Claude y tiene los links al hub
+  y al portfolio.
+- **La dirección es "La boleta del servicio"**: la asignó la tirada de impeccable (seed
+  `7febb644`), y el usuario la eligió por sobre el tablero de partidas, el horario de bolsillo y el
+  status de siempre. Lo fijo va en una tinta violeta de formulario y lo medido en negro de
+  impresora; el bermellón es sólo para lo caído, y no hay verde.
+
+**La revisión final.**
+- **Primera pasada:** *fix*, con siete arreglos materiales.
+- **Segunda pasada:** cinco resueltos y dos parciales.
+  - El recuadro del estado general todavía era más bajo que un renglón de servicio en escritorio.
+    Después le puse un alto mínimo de 16rem. Medido en el panel del navegador, a 1440 de ancho,
+    quedó en 256 px contra 238 de cada renglón. **Ese arreglo no pasó por una tercera revisión.**
+  - El modo oscuro tenía que quedar asentado en `DESIGN.md`, y ahí está, con su paleta.
+
+**Fuera del gate.**
+- La maqueta no tiene tests: es diseño, con datos de demostración, y la página real la arma S2 con
+  TDD.
+- El lint del gate sí corre sobre sus `.ts`. `tsc` no, porque no están en los dos programas del
+  gate: los chequeé a mano y dieron exit 0.
+- Las páginas y `lectura.js` se generan con `node diseno/maqueta/generar.ts` y no se versionan.
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  13:44:23
+   Duration  2.50s (transform 1.36s, setup 51ms, import 1.36s, tests 317ms, environment 0ms)
+
+GATE_EXIT=0
+```
+
+**Sha:** `fd21169`
