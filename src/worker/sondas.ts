@@ -40,6 +40,10 @@ export async function sondear(db: D1Database, hora: number): Promise<void> {
   const {results: componentes} = await db
     .prepare('SELECT stack, url FROM componentes')
     .all<Componente>();
+  // Antes del primer envío del emisor no hay componentes, y D1 no acepta un batch vacío.
+  if (componentes.length === 0) {
+    return;
+  }
   const sondas = await Promise.all(componentes.map(probar));
 
   const dia = diaUtc(hora);

@@ -106,4 +106,13 @@ describe('el cron de las sondas', () => {
       {stack: 'neonduel', dia: '2026-11-03', minutos_medidos: 1, minutos_arriba: 0},
     ]);
   });
+
+  it('sin componentes, la corrida termina sin escribir y sin error', async () => {
+    await env.DB.prepare('DELETE FROM componentes').run();
+    simularUrls(0);
+
+    await correrCron('2026-11-02T13:05:00Z');
+
+    expect(await leerHistoria()).toEqual([]);
+  });
 });
