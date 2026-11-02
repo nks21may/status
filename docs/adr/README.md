@@ -24,6 +24,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0014](0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md) | La salud de adentro llega con la etiqueta del stack, que suma `infra` | aceptado |
 | [0015](0015-el-envio-del-emisor.md) | El envío del emisor: `POST /api/report` con un token, y la última lista reemplaza a la anterior | aceptado |
 | [0016](0016-el-estado-con-fallas-y-el-corte-del-emisor.md) | Un servicio con la URL arriba y algo de adentro caído está "con fallas"; el emisor se corta a los 5 minutos | aceptado |
+| [0017](0017-como-se-publica.md) | Cómo se publica: el repo público en GitHub, el CI publica el Worker y la imagen, y el dominio se crea a mano | aceptado |
 
 ## Cuándo escribir uno
 

@@ -149,6 +149,18 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       Ver [ADR-0016](adr/0016-el-estado-con-fallas-y-el-corte-del-emisor.md). El cambio visual pasa
       por impeccable y actualiza `DESIGN.md` (ADR-0008).
 
+### Lo que salió de la publicación
+
+- [ ] **S10 — El CI publica el Worker y la imagen del emisor.** *Depende de S4.*
+      *Test:* el workflow `.github/workflows/publicar.yml` corre sólo en `main`, con el gate antes
+      de publicar. Aplica las migraciones remotas antes de `wrangler deploy`, con los secretos
+      `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`. Publica `ghcr.io/nks21may/status-emisor` con
+      `:latest` y `:<sha>` desde un runner arm. La imagen final del `Dockerfile` corre
+      `node src/emisor/principal.ts` sin `node_modules` y sin root, y `wrangler.jsonc` tiene
+      `workers_dev: false`. Además, `docker build` termina con exit 0.
+      **Se espera rojo:** el workflow y el `Dockerfile` no existen.
+      Ver [ADR-0017](adr/0017-como-se-publica.md).
+
 ---
 
 ## Parkeados
@@ -161,23 +173,26 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
   la explicación de qué pasó va por commit en este repo. Las alertas internas (`DiscoCasiLleno`,
   `DeployFallando`) no salen. *Falta:* que el usuario decida si entran y en qué fase. El webhook es
   un cambio en `infra`.
-- **Cómo se publican el Worker, la imagen del emisor y el dominio.**
-  - El Worker y la imagen, ¿desde el CI de este repo, con un token de Cloudflare que sólo toque
-    Workers y el de GHCR que ya usan las demás apps?
-  - El dominio `status.`, ¿lo crea Wrangler o lo maneja OpenTofu en `infra` (su ADR-0018)?
-  - La imagen todavía no existe: el emisor corre con `node src/emisor/principal.ts` (S4), y su
-    `Dockerfile` llega con esta decisión.
+- **Los pasos de una vez para publicar**
+  ([ADR-0017](adr/0017-como-se-publica.md)):
+  - crear el repo público en GitHub y subir `main`;
+  - crear la base D1 y anotar su `database_id`;
+  - el token de Cloudflare y los secretos de GitHub;
+  - el secreto `EMISOR_TOKEN`;
+  - el Custom Domain.
 
-  *Falta:* la decisión del usuario, con su ADR acá y en `infra`.
-- **El lado de `infra`.** Cuatro cosas:
+  *Falta:* los hace el usuario; tocan la cuenta, y este loop no la toca.
+- **El lado de `infra`.** Cinco cosas:
   - el stack del emisor, en la red del host, para llegar a Prometheus por loopback;
   - el token, cifrado con sops;
   - el catálogo, montado de sólo lectura;
   - la etiqueta `stack` en `infra_contenedor_sano`, tomada de `com.docker.compose.project`
-    ([ADR-0014](adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md)).
+    ([ADR-0014](adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md));
+  - el Custom Domain `status.nicolasdalessandro.dev`, importado en el OpenTofu de lectura
+    ([ADR-0017](adr/0017-como-se-publica.md)).
 
-  *Falta:* se piden como ítems en el backlog de `infra`. La etiqueta se puede pedir ya; lo demás,
-  cuando exista la imagen (S4).
+  *Falta:* se piden como ítems en el backlog de `infra`. La etiqueta se puede pedir ya; el stack
+  del emisor, cuando exista la imagen (S10); el Custom Domain, cuando el usuario lo cree.
 - **El empaquetado del Worker en el gate.** ADR-0001 dice que se suma al gate cuando llegue el
   Worker, y el Worker llegó con S1. `wrangler deploy --dry-run --outdir <dir>` empaqueta sin tocar
   la cuenta, pero el protocolo (punto 0.4) dice "nada de `wrangler deploy`". *Falta:* que el
