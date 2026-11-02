@@ -300,7 +300,7 @@
       "name": "Recuadro del estado general",
       "kind": "card",
       "refersTo": "resumen-corte",
-      "description": "El total de la boleta: lo único grande. En bermellón cuando algo está caído.",
+      "description": "El total de la boleta: lo único grande. En bermellón cuando algo está caído o anda con fallas.",
       "html": "<section class=\"ds-resumen\" role=\"status\"><h2><a href=\"#\">Neonduel</a> is down.</h2><p>5 of 6 up · last reading 13:05 UTC</p></section>",
       "css": ".ds-resumen { display: flex; flex-direction: column; justify-content: center; min-height: 16rem; padding: 3rem 2rem; border: 1px solid var(--tinta); background: var(--trama); } .ds-resumen h2 { margin: 0; font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 4.5rem; font-weight: 650; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; color: var(--corte); } .ds-resumen h2 a { color: inherit; text-decoration-color: currentColor; text-decoration-thickness: 0.05em; text-underline-offset: 0.12em; } .ds-resumen h2 a:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; } .ds-resumen p { margin: 1rem 0 0; font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 1.25rem; color: var(--dato-suave); }"
     },
@@ -308,9 +308,9 @@
       "name": "Estado",
       "kind": "chip",
       "refersTo": "estado-caido",
-      "description": "Marca cuadrada y palabra: negro si anda, bermellón si está caído, casillero discontinuo en tinta si no hay datos.",
-      "html": "<span class=\"ds-estado\"><span class=\"ds-marca\"></span>Up</span> <span class=\"ds-estado ds-estado--caido\"><span class=\"ds-marca\"></span>Down</span> <span class=\"ds-estado ds-estado--sin-datos\"><span class=\"ds-marca\"></span>No data</span>",
-      "css": ".ds-estado { display: inline-flex; align-items: center; gap: 0.5rem; margin-right: 1.5rem; font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 1.0625rem; font-weight: 650; color: var(--dato); } .ds-marca { flex: none; width: 0.6875rem; height: 0.6875rem; background: var(--dato); } .ds-estado--caido { color: var(--corte); } .ds-estado--caido .ds-marca { background: var(--corte); } .ds-estado--sin-datos { color: var(--tinta); font-weight: 450; } .ds-estado--sin-datos .ds-marca { background: none; outline: 1px dashed var(--tinta); outline-offset: -1px; }"
+      "description": "Marca cuadrada y palabra: negro si anda, bermellón si está caído, palabra en bermellón y marca partida (arriba bermellón, abajo negro) si anda con fallas, casillero discontinuo en tinta si no hay datos.",
+      "html": "<span class=\"ds-estado\"><span class=\"ds-marca\"></span>Up</span> <span class=\"ds-estado ds-estado--con-fallas\"><span class=\"ds-marca\"></span>Degraded</span> <span class=\"ds-estado ds-estado--caido\"><span class=\"ds-marca\"></span>Down</span> <span class=\"ds-estado ds-estado--sin-datos\"><span class=\"ds-marca\"></span>No data</span>",
+      "css": ".ds-estado { display: inline-flex; align-items: center; gap: 0.5rem; margin-right: 1.5rem; font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 1.0625rem; font-weight: 650; color: var(--dato); } .ds-marca { flex: none; width: 0.6875rem; height: 0.6875rem; background: var(--dato); } .ds-estado--caido { color: var(--corte); } .ds-estado--caido .ds-marca { background: var(--corte); } .ds-estado--sin-datos { color: var(--tinta); font-weight: 450; } .ds-estado--sin-datos .ds-marca { background: none; outline: 1px dashed var(--tinta); outline-offset: -1px; } .ds-estado--con-fallas { color: var(--corte); } .ds-estado--con-fallas .ds-marca { background: linear-gradient(to bottom, var(--corte) 0 50%, var(--dato) 0); }"
     },
     {
       "name": "Gráfico de consumo",

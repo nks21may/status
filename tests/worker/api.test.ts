@@ -13,6 +13,7 @@ interface Componente {
   id: string;
   name: string | null;
   description: {en: string | null; es: string | null};
+  inside: string;
   url: string;
   status: string;
   last_check: {at: string; up: boolean; latency_ms: number} | null;
@@ -71,6 +72,7 @@ describe('la API de estado', () => {
       'days',
       'description',
       'id',
+      'inside',
       'last_check',
       'name',
       'status',
@@ -117,6 +119,51 @@ describe('la API de estado', () => {
       {id: 'museo', name: 'Museo', description: {en: 'Shaders browsed like TV channels.', es: 'Shaders como canales de tele.'}},
       {id: 'neonduel', name: null, description: {en: null, es: null}},
     ]);
+  });
+
+  it('con un envío reciente trae la salud de adentro, y la URL arriba con algo de adentro no sano sale degraded', async () => {
+    const arriba = {dia: '2026-11-02', medidos: 785, arriba: 785, latenciaMs: 90, sondaEn: '2026-11-02T13:05:00Z', ultimaArriba: true};
+    await sembrar(
+      [
+        ['bot_discord', 'https://audio.example/', {nombre: 'Audio', en: 'Audio.', sano: false}],
+        ['museo', MUSEO, {nombre: 'Museo', en: 'Museo.', sano: true}],
+        ['neonduel', NEONDUEL, {nombre: 'Neonduel', en: 'Neonduel.', sano: false}],
+        ['nonograma', NONOGRAMA, {nombre: 'Nonograma', en: 'Nonograma.', sano: null}],
+      ],
+      [
+        {stack: 'bot_discord', ...arriba},
+        {stack: 'museo', ...arriba},
+        {stack: 'neonduel', ...arriba, arriba: 760, ultimaArriba: false},
+        {stack: 'nonograma', ...arriba},
+      ],
+      '2026-11-02T13:01:00Z',
+    );
+
+    const {estado} = await pedirEstado('2026-11-02T13:05:42Z');
+
+    expect(estado.components.map(({id, status, inside}) => ({id, status, inside}))).toEqual([
+      {id: 'bot_discord', status: 'degraded', inside: 'unhealthy'},
+      {id: 'museo', status: 'up', inside: 'healthy'},
+      {id: 'neonduel', status: 'down', inside: 'unhealthy'},
+      {id: 'nonograma', status: 'up', inside: 'no_data'},
+    ]);
+  });
+
+  it('sin envío en los últimos 5 minutos, lo de adentro sale sin datos y el estado vuelve a salir de afuera', async () => {
+    const componentes: [string, string, {nombre: string; en: string; sano: boolean}][] = [
+      ['bot_discord', 'https://audio.example/', {nombre: 'Audio', en: 'Audio.', sano: false}],
+    ];
+    const filas = [
+      {stack: 'bot_discord', dia: '2026-11-02', medidos: 785, arriba: 785, latenciaMs: 90, sondaEn: '2026-11-02T13:05:00Z', ultimaArriba: true},
+    ];
+
+    await sembrar(componentes, filas, '2026-11-02T12:59:00Z');
+    const {estado: viejo} = await pedirEstado('2026-11-02T13:05:42Z');
+    expect(viejo.components).toMatchObject([{id: 'bot_discord', status: 'up', inside: 'no_data'}]);
+
+    await sembrar(componentes, filas);
+    const {estado: nunca} = await pedirEstado('2026-11-02T13:05:42Z');
+    expect(nunca.components).toMatchObject([{id: 'bot_discord', status: 'up', inside: 'no_data'}]);
   });
 
   it('un componente sin medición reciente sale sin datos, no como arriba', async () => {

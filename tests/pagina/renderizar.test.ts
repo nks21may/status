@@ -22,6 +22,7 @@ function estadoConUnoCaido(): EstadoPublico {
         id: 'museo',
         name: null,
         description: {en: null, es: null},
+        inside: 'no_data',
         url: 'https://museo.nicolasdalessandro.dev/',
         status: 'up',
         last_check: {at: '2026-11-02T13:05:00.000Z', up: true, latency_ms: 182},
@@ -32,6 +33,7 @@ function estadoConUnoCaido(): EstadoPublico {
         id: 'neonduel',
         name: null,
         description: {en: null, es: null},
+        inside: 'no_data',
         url: 'https://neonduel.nicolasdalessandro.dev/',
         status: 'down',
         last_check: {at: '2026-11-02T13:05:00.000Z', up: false, latency_ms: 41},
@@ -106,6 +108,24 @@ describe('la página', () => {
 
     const enIngles = texto(renderizar(estado, 'en'));
     expect(enIngles).toContain('Museo museo.nicolasdalessandro.dev Shaders browsed like TV channels.');
+  });
+
+  it('un componente con fallas adentro dice Degraded o Con fallas, y el estado general lo nombra', () => {
+    const estado = estadoConUnoCaido();
+    const [museo, neonduel] = estado.components;
+    estado.components = [{...museo!, name: 'Audio', status: 'degraded', inside: 'unhealthy'}];
+
+    const html = renderizar(estado, 'en');
+    expect(html).toContain('<span class="estado estado--con-fallas">');
+    expect(html).toContain('class="recuadro resumen resumen--corte"');
+    expect(texto(html)).toContain('Audio is degraded.');
+    expect(texto(html)).toContain('Degraded');
+    expect(texto(renderizar(estado, 'es'))).toContain('Audio anda con fallas.');
+    expect(texto(renderizar(estado, 'es'))).toContain('Con fallas');
+
+    estado.components.push({...neonduel!, name: 'Neonduel'});
+    expect(texto(renderizar(estado, 'en'))).toContain('Neonduel is down. Audio is degraded.');
+    expect(texto(renderizar(estado, 'es'))).toContain('Neonduel está caído. Audio anda con fallas.');
   });
 
   it('cuando todo anda, lo dice en una línea', () => {

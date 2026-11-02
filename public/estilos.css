@@ -420,6 +420,16 @@ ul {
   background: var(--corte);
 }
 
+/* Con fallas: la URL contesta, pero algo de adentro no anda (ADR-0016). La marca es la de la barra
+   de un día con un corte: lo que falta, arriba en bermellón. */
+.estado--con-fallas {
+  color: var(--corte);
+}
+
+.estado--con-fallas .marca {
+  background: linear-gradient(to bottom, var(--corte) 0 50%, var(--dato) 0);
+}
+
 .estado--sin-datos {
   color: var(--tinta);
   font-weight: 450;

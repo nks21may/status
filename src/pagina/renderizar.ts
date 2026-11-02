@@ -21,6 +21,7 @@ const DIAS_PARA_ROTULAR = 6;
 /** La clase de cada estado en `DESIGN.md`: lo caído en bermellón, lo sin datos en tinta. */
 const CLASE_DE_ESTADO: Record<ComponentePublico['status'], string> = {
   up: 'anda',
+  degraded: 'con-fallas',
   down: 'caido',
   no_data: 'sin-datos',
 };
@@ -174,12 +175,20 @@ function resumen(estado: EstadoPublico | null, idioma: Idioma): string {
       .filter((componente) => componente.status === cual)
       .map((componente) => `<a href="#${ancla(componente.id)}">${escapar(nombreDe(componente))}</a>`);
   const caidos = nombres('down');
+  const conFallas = nombres('degraded');
   const sinLectura = nombres('no_data');
+  // Lo caído y lo que anda con fallas se nombran juntos, primero lo caído.
+  const fallas = [
+    caidos.length > 0 ? textos.caidos(caidos) : '',
+    conFallas.length > 0 ? textos.conFallas(conFallas) : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
   const [frase, clase] =
     componentes.length === 0
       ? [textos.sinServicios, 'resumen resumen--sin-datos']
-      : caidos.length > 0
-        ? [textos.caidos(caidos), 'resumen resumen--corte']
+      : fallas
+        ? [fallas, 'resumen resumen--corte']
         : sinLectura.length > 0
           ? [textos.sinLectura(sinLectura), 'resumen resumen--sin-datos']
           : [textos.todoAnda, 'resumen'];

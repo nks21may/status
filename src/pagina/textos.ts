@@ -24,6 +24,8 @@ export const TEXTOS = {
     idioma: 'Language',
     todoAnda: 'All services are up.',
     caidos: (nombres: readonly string[]) => `${enumerar(nombres, 'and')} ${nombres.length > 1 ? 'are' : 'is'} down.`,
+    conFallas: (nombres: readonly string[]) =>
+      `${enumerar(nombres, 'and')} ${nombres.length > 1 ? 'are' : 'is'} degraded.`,
     sinLectura: (nombres: readonly string[]) => `No recent reading from ${enumerar(nombres, 'and')}.`,
     sinServicios: 'No services yet.',
     cuenta: (arriba: number, total: number, ultima: string) => `${arriba} of ${total} up · last reading ${ultima}`,
@@ -32,7 +34,7 @@ export const TEXTOS = {
     sinDatosCuenta: 'The status API did not answer. Try again in a minute.',
     servicios: 'Services',
     columnas: ['Service', 'Status', 'Last reading', '90-day availability'],
-    estados: {up: 'Up', down: 'Down', no_data: 'No data'},
+    estados: {up: 'Up', degraded: 'Degraded', down: 'Down', no_data: 'No data'},
     grafico: (nombre: string) => `${nombre}, daily availability for the last 90 days`,
     lectura: 'Reading',
     diaConLectura: (fecha: string, arriba: string, medidos: string, porcentaje: string) =>
@@ -59,6 +61,8 @@ export const TEXTOS = {
     todoAnda: 'Todos los servicios andan.',
     caidos: (nombres: readonly string[]) =>
       `${enumerar(nombres, 'y')} ${nombres.length > 1 ? 'están caídos' : 'está caído'}.`,
+    conFallas: (nombres: readonly string[]) =>
+      `${enumerar(nombres, 'y')} ${nombres.length > 1 ? 'andan' : 'anda'} con fallas.`,
     sinLectura: (nombres: readonly string[]) => `Sin lectura reciente de ${enumerar(nombres, 'y')}.`,
     sinServicios: 'Todavía no hay servicios.',
     cuenta: (arriba: number, total: number, ultima: string) =>
@@ -68,7 +72,7 @@ export const TEXTOS = {
     sinDatosCuenta: 'La API del status no contestó. Probá de nuevo en un minuto.',
     servicios: 'Servicios',
     columnas: ['Servicio', 'Estado', 'Última lectura', 'Disponibilidad 90 días'],
-    estados: {up: 'Anda', down: 'Caído', no_data: 'Sin datos'},
+    estados: {up: 'Anda', degraded: 'Con fallas', down: 'Caído', no_data: 'Sin datos'},
     grafico: (nombre: string) => `${nombre}, disponibilidad diaria de los últimos 90 días`,
     lectura: 'Lectura',
     diaConLectura: (fecha: string, arriba: string, medidos: string, porcentaje: string) =>

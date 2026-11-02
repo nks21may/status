@@ -16,17 +16,31 @@ export interface Ficha {
   nombre: string;
   es?: string;
   en?: string;
+  /** La salud de adentro que mandó el emisor; sin ella, sin datos. */
+  sano?: boolean | null;
 }
 
-/** Deja en D1 estos componentes y estas filas de historia, y nada más. */
-export async function sembrar(componentes: [string, string, Ficha?][], filas: Fila[]): Promise<void> {
+/**
+ * Deja en D1 estos componentes y estas filas de historia, y nada más. `envioEn` es la hora del último
+ * envío del emisor; sin ella, el emisor nunca mandó nada.
+ */
+export async function sembrar(componentes: [string, string, Ficha?][], filas: Fila[], envioEn?: string): Promise<void> {
   await env.DB.batch([
     env.DB.prepare('DELETE FROM historia'),
     env.DB.prepare('DELETE FROM componentes'),
+    env.DB.prepare('DELETE FROM envios'),
+    ...(envioEn ? [env.DB.prepare('INSERT INTO envios (id, recibido_en) VALUES (1, ?1)').bind(Date.parse(envioEn))] : []),
     ...componentes.map(([stack, url, ficha]) =>
       env.DB.prepare(
-        'INSERT INTO componentes (stack, url, nombre, descripcion_es, descripcion_en) VALUES (?1, ?2, ?3, ?4, ?5)',
-      ).bind(stack, url, ficha?.nombre ?? null, ficha?.es ?? null, ficha?.en ?? null),
+        'INSERT INTO componentes (stack, url, nombre, descripcion_es, descripcion_en, sano_adentro) VALUES (?1, ?2, ?3, ?4, ?5, ?6)',
+      ).bind(
+        stack,
+        url,
+        ficha?.nombre ?? null,
+        ficha?.es ?? null,
+        ficha?.en ?? null,
+        ficha?.sano === undefined || ficha.sano === null ? null : Number(ficha.sano),
+      ),
     ),
     ...filas.map((fila) =>
       env.DB.prepare(

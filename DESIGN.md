@@ -175,7 +175,7 @@ Una tinta de formulario, una tinta de impresora y un bermellón reservado, sobre
 Bajo `prefers-color-scheme: dark` los mismos siete roles toman los valores `*-oscuro` del frontmatter: papel violeta casi negro, tinta lavanda, trama y regla suave en violetas profundos, dato casi blanco y un bermellón más claro para sostener el contraste. Ningún rol se agrega ni se quita; `color-scheme` pasa a `dark` y `scrollbar-color` sigue siendo tinta sobre papel.
 
 ### Named Rules
-**La regla del color que avisa.** El bermellón aparece sólo si algo está caído. Una página donde todo anda no tiene ni un píxel de bermellón, y tampoco tiene verde: "anda" se imprime en negro.
+**La regla del color que avisa.** El bermellón aparece sólo si algo está caído, afuera (la URL no contesta) o adentro (un contenedor no sano: "con fallas"). Una página donde todo anda no tiene ni un píxel de bermellón, y tampoco tiene verde: "anda" se imprime en negro.
 
 **La regla de las dos tintas.** Si es parte de la plantilla, va en tinta violeta; si salió de una medición o de una ficha, va en negro de impresora. Un dato nunca se imprime en violeta, salvo la ausencia de dato ("sin datos"), que es el formulario vacío.
 
@@ -258,10 +258,10 @@ Sobrios, de formulario.
 El par rótulo y valor del formulario: rótulo arriba en tinta, valor debajo en Chivo Mono negro, a `e-1` de distancia. Se usa en el encabezado, en el talón y en los datos de cada servicio en el celular.
 
 ### Estado
-Una marca cuadrada y su palabra, a 650. "Anda": marca y palabra en negro. "Caído": las dos en bermellón. "Sin datos": palabra en tinta a 450 y la marca vacía con contorno discontinuo. El estado nunca depende sólo del color: siempre lleva su palabra.
+Una marca cuadrada y su palabra, a 650. "Anda": marca y palabra en negro. "Caído": las dos en bermellón. "Con fallas" ("Degraded"): la URL contesta pero algo de adentro no anda (ADR-0016); la palabra va en bermellón y la marca, partida: la mitad de arriba en bermellón y la de abajo en negro, como la barra de un día con un corte. "Sin datos": palabra en tinta a 450 y la marca vacía con contorno discontinuo. El estado nunca depende sólo del color: siempre lleva su palabra.
 
 ### Recuadro del estado general (componente firma)
-El total de la boleta: un panel de trama en recuadro, con la frase en tamaño resumen y la cuenta debajo. Negro si todo anda, bermellón si algo cae (nombrando lo caído con un link a su renglón), tinta si la API no contestó ("Ahora no hay datos."). Lleva `role="status"`.
+El total de la boleta: un panel de trama en recuadro, con la frase en tamaño resumen y la cuenta debajo. Negro si todo anda; bermellón si algo cae o anda con fallas, nombrando primero lo caído y después lo que anda con fallas, cada uno con un link a su renglón ("Neonduel is down. Audio is degraded."); tinta si la API no contestó ("Ahora no hay datos."). Lleva `role="status"`.
 
 ### Gráfico de consumo (componente firma)
 El gráfico de la boleta: 90 barras, una por día UTC, de 2.75rem de alto (2.25rem en el celular), con 2 px entre barras (1 px en el celular) y la regla de base en tinta. El eje vertical va de 95 % a 100 %, rotulado a la izquierda.
@@ -280,7 +280,7 @@ El talón troquelado al pie: título en receta de documento, una línea de texto
 
 ### Do:
 - **Do** imprimir en tinta violeta todo lo que es plantilla (reglas, recuadros, rótulos, ejes) y en negro de impresora, con Chivo Mono, todo lo que viene de un dato.
-- **Do** reservar el bermellón para lo caído: la frase, la palabra y la marca del estado, y la parte faltante de un día, con 2 px como mínimo.
+- **Do** reservar el bermellón para lo caído y lo que anda con fallas: la frase, la palabra y la marca del estado, y la parte faltante de un día, con 2 px como mínimo.
 - **Do** dibujar un día sin lectura como el casillero punteado en tinta, y decir "sin datos" en vez de suponer que anda.
 - **Do** mantener el estado general como lo único grande de la hoja, y dueño de la primera pantalla del celular junto con el encabezado.
 - **Do** usar reglas de 1 px y paneles de trama para separar, con esquinas a escuadra.

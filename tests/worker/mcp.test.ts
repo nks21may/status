@@ -130,6 +130,7 @@ describe('el MCP', () => {
       id: 'neonduel',
       name: 'Neonduel',
       description: {en: 'A 1v1 browser 3D shooter.', es: null},
+      inside: 'no_data',
       url: NEONDUEL,
       status: 'down',
       last_check: {at: '2026-11-02T13:05:00.000Z', up: false, latency_ms: 41},
