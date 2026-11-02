@@ -73,10 +73,12 @@ npm run gate
       `tools/call` del estado general devuelve lo mismo que la API de S2. Un nombre de componente que
       no existe o una cantidad de días fuera de rango devuelve un error de la tool, no un 500.
       **Se espera rojo:** `POST /mcp` contesta 404.
-      Ver [ADR-0006](adr/0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) (propuesto: se
-      confirma antes de tomarlo) y [ADR-0005](adr/0005-ingles-por-defecto-y-espanol.md).
+      Ver [ADR-0006](adr/0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) y
+      [ADR-0005](adr/0005-ingles-por-defecto-y-espanol.md).
 
-- [ ] **S4 — La VPS manda lo de adentro: el endpoint autenticado y el emisor.** *Depende de S1.*
+- [ ] **S4 — La VPS manda lo de adentro: el endpoint autenticado y el emisor.** *Depende de S1, y de
+      que el usuario decida cómo se pasa de contenedor a stack (ADR-0007): hasta entonces, no es
+      tomable.*
       *Test:* el `POST` de envío sin token, o con uno equivocado, contesta 401 y no escribe nada; con
       el token guarda los componentes del catálogo, la salud de cada uno y la hora del envío. El
       emisor, con una respuesta de Prometheus de ejemplo (`infra_contenedor_sano`) y un
@@ -84,8 +86,7 @@ npm run gate
       **Se espera rojo:** la ruta de envío contesta 404, y el emisor no existe.
       Ver [ADR-0003](adr/0003-la-vps-empuja-lo-de-adentro.md),
       [ADR-0004](adr/0004-el-emisor-vive-aca-y-lo-despliega-infra.md) y
-      [ADR-0007](adr/0007-los-componentes-salen-del-catalogo-del-hub.md) (propuesto, y con el paso
-      de contenedor a stack por decidir: se confirma antes de tomarlo).
+      [ADR-0007](adr/0007-los-componentes-salen-del-catalogo-del-hub.md).
       ⚠️ **seguridad.**
 
 ---

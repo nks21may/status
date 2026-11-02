@@ -8,13 +8,13 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 
 | # | Decisión | Estado |
 |---|---|---|
-| [0001](0001-typescript-vitest-4-y-gate-en-el-host.md) | TypeScript en todo el repo, Vitest 4 con el pool de Workers, gate `npm run gate` en el host | propuesto |
+| [0001](0001-typescript-vitest-4-y-gate-en-el-host.md) | TypeScript en todo el repo, Vitest 4 con el pool de Workers, gate `npm run gate` en el host | aceptado |
 | [0002](0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md) | Corre en un Worker de Cloudflare, fuera de la VPS, en el plan Free | aceptado |
 | [0003](0003-la-vps-empuja-lo-de-adentro.md) | La VPS empuja lo de adentro; el Worker no le pregunta nada a la VPS | aceptado |
 | [0004](0004-el-emisor-vive-aca-y-lo-despliega-infra.md) | El emisor vive en este repo, se publica como imagen en GHCR y lo despliega `infra` | aceptado |
 | [0005](0005-ingles-por-defecto-y-espanol.md) | Inglés por defecto y español; el MCP, en inglés | aceptado |
-| [0006](0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) | El MCP es remoto, público, sin login y de sólo lectura | propuesto |
-| [0007](0007-los-componentes-salen-del-catalogo-del-hub.md) | Los componentes salen del catálogo del hub, y los manda el emisor | propuesto |
+| [0006](0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) | El MCP es remoto, público, sin login y de sólo lectura | aceptado |
+| [0007](0007-los-componentes-salen-del-catalogo-del-hub.md) | Los componentes salen del catálogo del hub, y los manda el emisor | aceptado |
 
 ## Cuándo escribir uno
 

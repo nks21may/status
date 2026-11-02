@@ -1,6 +1,6 @@
 # ADR-0001 — TypeScript en todo el repo, Vitest 4 con el pool de Workers, gate `npm run gate` en el host
 
-- **Estado:** propuesto
+- **Estado:** aceptado (propuesto el 2026-11-02; confirmado por el usuario el 2026-11-02)
 - **Fecha:** 2026-11-02
 - **Decide:** en qué lenguaje se escriben las tres piezas del repo, con qué se testean y qué comando
   dice que algo está hecho.

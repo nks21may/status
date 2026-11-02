@@ -1,6 +1,6 @@
 # ADR-0006 — El MCP es remoto, público, sin login y de sólo lectura
 
-- **Estado:** propuesto
+- **Estado:** aceptado (propuesto el 2026-11-02; confirmado por el usuario el 2026-11-02)
 - **Fecha:** 2026-11-02
 - **Decide:** cómo se ofrece el MCP, quién lo puede usar y qué puede hacer.
 

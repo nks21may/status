@@ -20,18 +20,27 @@ todo lo que parece una decisión abierta ya está decidido y con motivo.
 Cada una tiene un ADR detrás. Un cambio que las viole se rechaza en review,
 aunque los tests pasen.
 
-1. **Corre en un Worker de Cloudflare, fuera de la VPS, en el plan Free.** Nada que cobre lo que se
+1. **TypeScript en todo el repo, y el gate es `npm run gate`.** Vitest 4, con los tests del Worker
+   en `workerd` y un D1 local; el contrato del POST es un tipo que comparten el emisor y el Worker.
+   [ADR-0001](docs/adr/0001-typescript-vitest-4-y-gate-en-el-host.md)
+2. **Corre en un Worker de Cloudflare, fuera de la VPS, en el plan Free.** Nada que cobre lo que se
    pasa de su cupo: ni Workers Paid ni R2. Un producto nuevo de Cloudflare entra con un ADR que dice
    su cupo gratis. [ADR-0002](docs/adr/0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md)
-2. **El Worker nunca le pregunta nada a la VPS.** Lo de adentro llega por el POST autenticado del
+3. **El Worker nunca le pregunta nada a la VPS.** Lo de adentro llega por el POST autenticado del
    emisor, y la página, la API y el MCP sólo leen D1.
    [ADR-0003](docs/adr/0003-la-vps-empuja-lo-de-adentro.md)
-3. **El emisor vive acá y lo despliega `infra`.** Este repo publica la imagen; cómo y dónde corre
+4. **El emisor vive acá y lo despliega `infra`.** Este repo publica la imagen; cómo y dónde corre
    se decide allá. Este repo no toca la VPS.
    [ADR-0004](docs/adr/0004-el-emisor-vive-aca-y-lo-despliega-infra.md)
-4. **Inglés por defecto y español.** La página está en los dos idiomas y arranca en inglés; las
+5. **Inglés por defecto y español.** La página está en los dos idiomas y arranca en inglés; las
    tools del MCP y la API pública, en inglés. El código, en español.
    [ADR-0005](docs/adr/0005-ingles-por-defecto-y-espanol.md)
+6. **El MCP es público, sin login y de sólo lectura**, en `/mcp` del mismo Worker y sin estado.
+   Ninguna tool escribe ni acepta consultas libres: sólo el nombre de un componente y una cantidad
+   de días, validados. [ADR-0006](docs/adr/0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md)
+7. **Los componentes salen del catálogo del hub**: un componente es una ficha visible, y la lista
+   la manda el emisor. Ningún componente se escribe a mano en este repo.
+   [ADR-0007](docs/adr/0007-los-componentes-salen-del-catalogo-del-hub.md)
 
 ## Convenciones
 

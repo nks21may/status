@@ -1,6 +1,6 @@
 # ADR-0007 — Los componentes salen del catálogo del hub, y los manda el emisor
 
-- **Estado:** propuesto
+- **Estado:** aceptado (propuesto el 2026-11-02; confirmado por el usuario el 2026-11-02)
 - **Fecha:** 2026-11-02
 - **Decide:** qué es un componente del status, de dónde sale la lista y la URL que se prueba.
 
