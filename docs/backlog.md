@@ -158,6 +158,25 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       **Se espera rojo:** el workflow y el `Dockerfile` no existen.
       Ver [ADR-0017](adr/0017-como-se-publica.md).
 
+### Lo que pidió `infra`
+
+- [ ] **S11 — El emisor tiene un `/healthz` en loopback, para el healthcheck de `infra`.** *Depende de S4.*
+      *Test:* el emisor levanta un servidor HTTP en `127.0.0.1`, en el puerto de `PUERTO_SALUD`, o
+      en 8460 si la variable falta. `GET /healthz` contesta:
+      - 503 antes del primer envío;
+      - 200 después de un envío que el Worker aceptó;
+      - 503 si el último envío falló, o si el último que salió bien tiene más de 3 minutos (el
+        ciclo se trabó).
+
+      Cualquier otra ruta contesta 404.
+      **Se espera rojo:** el servidor de salud no existe.
+      El pedido es de la sesión de `infra`, el 2026-11-02: su gate le exige a todo servicio un
+      healthcheck que consulte `127.0.0.1`, y su deploy vuelve a la imagen anterior si el
+      contenedor no queda healthy. Su I85 (el stack del emisor) depende de esto. El healthcheck de
+      allá es `wget --no-verbose --tries=1 --spider http://127.0.0.1:<puerto>/healthz`, con el
+      `wget` de busybox de la imagen. El puerto queda en el README de acá, e `infra` lo registra a
+      nombre del stack `status`.
+
 ---
 
 ## Parkeados
@@ -170,15 +189,10 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
   la explicación de qué pasó va por commit en este repo. Las alertas internas (`DiscoCasiLleno`,
   `DeployFallando`) no salen. *Falta:* que el usuario decida si entran y en qué fase. El webhook es
   un cambio en `infra`.
-- **Los pasos de una vez para publicar**
-  ([ADR-0017](adr/0017-como-se-publica.md)):
-  - crear el repo público en GitHub y subir `main`;
-  - crear la base D1 y anotar su `database_id`;
-  - el token de Cloudflare y los secretos de GitHub;
-  - el secreto `EMISOR_TOKEN`;
-  - el Custom Domain.
-
-  *Falta:* los hace el usuario; tocan la cuenta, y este loop no la toca.
+- **La visibilidad de la imagen en GHCR.** De los pasos de una vez de
+  [ADR-0017](adr/0017-como-se-publica.md) sólo queda éste. El repo, la base D1, el token, los
+  secretos y el Custom Domain se hicieron el 2026-11-02. *Falta:* que el usuario la deje igual que
+  la de `hub`, para que la VPS pueda bajarla.
 - **El lado de `infra`.** Cinco cosas:
   - el stack del emisor, en la red del host, para llegar a Prometheus por loopback;
   - el token, cifrado con sops;
