@@ -137,10 +137,6 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
 - **El lado de `infra`.** El stack del emisor (en la red del host, para llegar a Prometheus por
   loopback), el token cifrado con sops, y el catálogo montado de sólo lectura. *Falta:* que exista
   la imagen (S4); se pide como ítem en el backlog de `infra`.
-- **ADR-0009 (la historia por día UTC) está propuesto.** Lo escribió la iteración S1 antes del
-  test, como manda el protocolo. *Falta:* que el usuario lo confirme o lo cambie antes de S2, que
-  es el primero que lee la historia, y antes de S7, que le suma una migración. La decisión que más
-  pesa es la del día UTC: la historia agregada no se puede rearmar en la hora local del visitante.
 - **El empaquetado del Worker en el gate.** ADR-0001 dice que se suma al gate cuando llegue el
   Worker, y el Worker llegó con S1. `wrangler deploy --dry-run --outdir <dir>` empaqueta sin tocar
   la cuenta, pero el protocolo (punto 0.4) dice "nada de `wrangler deploy`". *Falta:* que el

@@ -1,7 +1,7 @@
 # ADR-0009 — La historia en D1 es una fila por componente y por día UTC
 
-- **Estado:** propuesto (por la iteración S1 del loop, el 2026-11-02; falta que lo confirme el
-  usuario)
+- **Estado:** aceptado (propuesto por la iteración S1 del loop el 2026-11-02; confirmado por el
+  usuario el 2026-11-02)
 - **Fecha:** 2026-11-02
 - **Decide:** cómo se guarda en D1 lo que mide el cron, con qué clave, y qué cuenta como un minuto
   arriba.

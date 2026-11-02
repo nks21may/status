@@ -16,7 +16,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0006](0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) | El MCP es remoto, público, sin login y de sólo lectura | aceptado |
 | [0007](0007-los-componentes-salen-del-catalogo-del-hub.md) | Los componentes salen del catálogo del hub, y los manda el emisor | aceptado |
 | [0008](0008-la-pagina-se-disena-con-impeccable.md) | La página se diseña con la skill `impeccable`, antes de S2 | aceptado |
-| [0009](0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md) | La historia en D1 es una fila por componente y por día UTC; un minuto arriba es un 2xx | propuesto |
+| [0009](0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md) | La historia en D1 es una fila por componente y por día UTC; un minuto arriba es un 2xx | aceptado |
 | [0010](0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md) | Los tests del Worker usan `@cloudflare/vitest-plugin` con Vitest 4; el gate chequea dos programas de TypeScript | aceptado |
 
 ## Cuándo escribir uno

@@ -46,6 +46,10 @@ aunque los tests pasen.
 8. **El diseño de la página sale de `PRODUCT.md` y `DESIGN.md`**, escritos con `impeccable` antes
    de S2. Un color, una tipografía o un espaciado que no sale de ahí es un hallazgo de review.
    [ADR-0008](docs/adr/0008-la-pagina-se-disena-con-impeccable.md)
+9. **La historia es una fila por componente y por día UTC**, con dos contadores (minutos medidos y
+   arriba) y la última sonda; un componente se identifica por su `stack`, y un minuto arriba es un
+   2xx después de seguir las redirecciones. El esquema cambia sólo con una migración nueva, nunca
+   editando una aplicada. [ADR-0009](docs/adr/0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md)
 
 ## Convenciones
 
