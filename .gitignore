@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.env
+.env.local
+.vite/
+logs/
+
+# El estado local de Wrangler (D1 y la caché de Miniflare) y sus secretos de desarrollo.
+.wrangler/
+.dev.vars

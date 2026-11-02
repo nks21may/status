@@ -1,0 +1,8 @@
+# Finales de línea fijos. Sin esto, un repo trabajado desde Windows termina
+# mezclando CRLF y LF, y cada edición que reescribe un archivo le cambia el final
+# de línea sin que se note (A39 del agente de bot_tg).
+* text=auto eol=lf
+
+# Los scripts de Windows sí necesitan CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
