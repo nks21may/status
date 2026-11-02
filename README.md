@@ -60,9 +60,19 @@ commit allá.
 | `CATALOGO` | La ruta del `catalogo.json` que escribe el deploy, montado de sólo lectura. |
 | `STATUS_URL` | La URL del Worker, por ejemplo `https://status.nicolasdalessandro.dev`. |
 | `STATUS_TOKEN` | El token del envío: el mismo valor que el secreto `EMISOR_TOKEN` del Worker. |
+| `PUERTO_SALUD` | Opcional: el puerto del `/healthz`, en `127.0.0.1`. Si falta, **8460**. |
 
 De Prometheus lee `infra_contenedor_sano` y la agrupa por su etiqueta `stack`
 ([ADR-0014](docs/adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md)).
+
+Para el healthcheck de `infra` sirve `GET http://127.0.0.1:8460/healthz`, sólo en IPv4 y en
+loopback. Contesta 200 si el último envío lo aceptó el Worker hace 3 minutos o menos, y 503 si no:
+antes del primer envío, si el último falló, o si el ciclo se trabó. En la imagen está el `wget` de
+busybox:
+
+```bash
+wget --no-verbose --tries=1 --spider http://127.0.0.1:8460/healthz
+```
 
 ## El gate
 
