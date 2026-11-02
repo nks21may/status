@@ -82,7 +82,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       Ver [ADR-0002](adr/0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md) y
       [ADR-0005](adr/0005-ingles-por-defecto-y-espanol.md).
 
-- [ ] **S3 — El MCP remoto contesta en `/mcp` con las tools de sólo lectura.** *Depende de S2.*
+- [x] **S3 — El MCP remoto contesta en `/mcp` con las tools de sólo lectura.** *Depende de S2.*
       *Test:* un cliente MCP contra `/mcp` hace `initialize`; `tools/list` devuelve las tools del
       estado general, de un componente y de su historia, con nombres y descripciones en inglés; y
       `tools/call` del estado general devuelve lo mismo que la API de S2. Un nombre de componente que

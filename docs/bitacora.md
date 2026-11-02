@@ -868,3 +868,99 @@ GATE_EXIT=0
 - Hasta S4 un componente no tiene nombre ni descripción: la página muestra su `id`.
 
 **Sha:** `bd5350d`
+
+## S3 — El MCP remoto contesta en `/mcp` con las tools de sólo lectura · 2026-11-02
+
+**Archivos:**
+- Código: `src/worker/mcp.ts` y `src/worker/index.ts`.
+- Tests: `tests/worker/mcp.test.ts`, y `tests/worker/sembrar.ts`, el helper que ahora comparte con
+  `tests/worker/api.test.ts`.
+- Documentación: `docs/adr/0013-el-mcp-habla-json-rpc-a-mano-y-sus-tools.md`,
+  `docs/adr/README.md` y `CLAUDE.md` (la regla 6).
+- En el commit siguiente: `docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`
+
+**El ADR, primero.**
+- **Qué faltaba decidir.** ADR-0006 daba por hecho una librería "fijada", pero no la elegía. Y
+  los nombres de las tools son públicos.
+- **Por qué no el SDK.** `@modelcontextprotocol/sdk` 1.32.2 trae express, hono, ajv y una docena
+  más, y ajv compila con `new Function`, que workerd no permite. Encima, el plan Free da 10 ms de
+  CPU por pedido.
+- **Lo que decide.** [ADR-0013](adr/0013-el-mcp-habla-json-rpc-a-mano-y-sus-tools.md) implementa
+  a mano el JSON-RPC de Streamable HTTP, sin estado y sin SSE, con tres tools: `get_status`,
+  `get_component` y `get_component_history`.
+- **Lo aceptó el usuario** antes del test.
+- **Una línea agregada después de aceptarlo, antes del rojo:** una tool desconocida es el error
+  JSON-RPC -32602, como pide la especificación, y no un error de la tool.
+
+**Rojo**, el esperado: `POST /mcp` contesta 404 (lo contestan los archivos estáticos, porque el
+Worker les pasa lo que no es suyo). Los 10 tests nuevos fallan y los 19 de antes siguen en verde.
+
+```
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+ RUN  v4.1.12 P:/status
+ ❯ |worker| tests/worker/mcp.test.ts (10 tests | 10 failed) 118ms
+     × contesta initialize con la versión que pide el cliente y sus capacidades 33ms
+     × a una versión que no conoce le contesta con la más nueva 8ms
+     × lista las tres tools de sólo lectura, con nombres y descripciones en inglés 8ms
+     × el estado general devuelve lo mismo que la API 22ms
+     × el estado de un componente es el de la API, sin la lista de días 9ms
+     × la historia de un componente trae los últimos días pedidos y su disponibilidad 8ms
+     × un componente que no existe es un error de la tool, con los que hay 7ms
+     × una cantidad de días fuera de rango o que no es un entero es un error de la tool 8ms
+     × una tool o un método que no existen son errores de JSON-RPC, no un 500 10ms
+     × sin sesiones ni stream: GET contesta 405 4ms
+ FAIL  |worker| tests/worker/mcp.test.ts > el MCP > contesta initialize con la versión que pide el cliente y sus capacidades
+AssertionError: expected 404 to be 200 // Object.is equality
+ Test Files  1 failed | 5 passed (6)
+      Tests  10 failed | 19 passed (29)
+```
+
+**En el camino a verde.** Una primera corrida dejó un rojo: `days: null` caía en el valor por
+defecto, porque el código usaba `??`. Si falta `days`, van los 90; un `null` es un valor que no
+sirve, y ahora es un error de la tool.
+
+**Con un cliente de verdad.** Como el protocolo está escrito a mano, lo probé además con el
+cliente del SDK oficial (1.32.2, instalado en el scratchpad, no en el repo). Fue contra
+`wrangler dev` en local, con el D1 local:
+
+```
+servidor: {"name":"status.nicolasdalessandro.dev","title":"nicolasdalessandro.dev status","version":"1.0.0"} protocolo: 2025-11-25
+tools: get_status, get_component, get_component_history
+get_component: {"id":"neonduel","url":"https://neonduel.nicolasdalessandro.dev/","status":"no_data","last_check":{"at":"2026-11-02T16:59:36.107Z","up":false,"latency_ms":80},"uptime_90d":0.9970457902511078}
+get_component_history: {"id":"museo","uptime":0.9989740959220312,"days":[{"date":"2026-10-31","minutes_measured":1440,"minutes_up":1436},{"date":"2026-11-01","minutes_measured":1440,"minutes_up":1440},{"date":"2026-11-02","minutes_measured":1019,"minutes_up":1019}]}
+error de tool: true Unknown component "pinball". Known components: museo, neonduel, nonograma.
+```
+
+El `no_data` de neonduel es el correcto: la siembra local tenía más de 5 minutos.
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  6 passed (6)
+      Tests  29 passed (29)
+   Start at  14:13:10
+   Duration  1.22s (transform 131ms, setup 332ms, import 208ms, tests 598ms, environment 0ms)
+
+GATE_EXIT=0
+```
+
+**Sha:** `2bd0e08`
