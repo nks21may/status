@@ -91,17 +91,18 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       Ver [ADR-0006](adr/0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) y
       [ADR-0005](adr/0005-ingles-por-defecto-y-espanol.md).
 
-- [ ] **S4 — La VPS manda lo de adentro: el endpoint autenticado y el emisor.** *Depende de S1, y de
-      que el usuario decida cómo se pasa de contenedor a stack (ADR-0007): hasta entonces, no es
-      tomable.*
+- [ ] **S4 — La VPS manda lo de adentro: el endpoint autenticado y el emisor.** *Depende de S1.*
       *Test:* el `POST` de envío sin token, o con uno equivocado, contesta 401 y no escribe nada; con
       el token guarda los componentes del catálogo, la salud de cada uno y la hora del envío. El
-      emisor, con una respuesta de Prometheus de ejemplo (`infra_contenedor_sano`) y un
-      `catalogo.json` de ejemplo, arma el cuerpo con el tipo que comparte con el Worker.
+      emisor, con una respuesta de Prometheus de ejemplo (`infra_contenedor_sano` con la etiqueta
+      `stack`) y un `catalogo.json` de ejemplo, arma el cuerpo con el tipo que comparte con el
+      Worker: un componente es sano si todos sus contenedores lo son, y sin series va sin datos de
+      adentro.
       **Se espera rojo:** la ruta de envío contesta 404, y el emisor no existe.
       Ver [ADR-0003](adr/0003-la-vps-empuja-lo-de-adentro.md),
-      [ADR-0004](adr/0004-el-emisor-vive-aca-y-lo-despliega-infra.md) y
-      [ADR-0007](adr/0007-los-componentes-salen-del-catalogo-del-hub.md).
+      [ADR-0004](adr/0004-el-emisor-vive-aca-y-lo-despliega-infra.md),
+      [ADR-0007](adr/0007-los-componentes-salen-del-catalogo-del-hub.md) y
+      [ADR-0014](adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md).
       ⚠️ **seguridad.**
 
 ### Lo que salió de S1
@@ -143,9 +144,15 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
   el CI de este repo, con un token de Cloudflare que sólo toque Workers y el de GHCR que ya usan las
   demás apps? El dominio `status.`, ¿lo crea Wrangler o lo maneja OpenTofu en `infra` (su
   ADR-0018)? *Falta:* la decisión del usuario, con su ADR acá y en `infra`.
-- **El lado de `infra`.** El stack del emisor (en la red del host, para llegar a Prometheus por
-  loopback), el token cifrado con sops, y el catálogo montado de sólo lectura. *Falta:* que exista
-  la imagen (S4); se pide como ítem en el backlog de `infra`.
+- **El lado de `infra`.** Cuatro cosas:
+  - el stack del emisor, en la red del host, para llegar a Prometheus por loopback;
+  - el token, cifrado con sops;
+  - el catálogo, montado de sólo lectura;
+  - la etiqueta `stack` en `infra_contenedor_sano`, tomada de `com.docker.compose.project`
+    ([ADR-0014](adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md)).
+
+  *Falta:* se piden como ítems en el backlog de `infra`. La etiqueta se puede pedir ya; lo demás,
+  cuando exista la imagen (S4).
 - **El empaquetado del Worker en el gate.** ADR-0001 dice que se suma al gate cuando llegue el
   Worker, y el Worker llegó con S1. `wrangler deploy --dry-run --outdir <dir>` empaqueta sin tocar
   la cuenta, pero el protocolo (punto 0.4) dice "nada de `wrangler deploy`". *Falta:* que el

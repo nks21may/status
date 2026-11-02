@@ -1,6 +1,7 @@
 # ADR-0007 — Los componentes salen del catálogo del hub, y los manda el emisor
 
-- **Estado:** aceptado (propuesto el 2026-11-02; confirmado por el usuario el 2026-11-02)
+- **Estado:** aceptado (propuesto el 2026-11-02; confirmado por el usuario el 2026-11-02). El paso de
+  contenedor a stack lo decide [ADR-0014](0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md)
 - **Fecha:** 2026-11-02
 - **Decide:** qué es un componente del status, de dónde sale la lista y la URL que se prueba.
 
