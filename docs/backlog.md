@@ -160,7 +160,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
 
 ### Lo que pidió `infra`
 
-- [ ] **S11 — El emisor tiene un `/healthz` en loopback, para el healthcheck de `infra`.** *Depende de S4.*
+- [x] **S11 — El emisor tiene un `/healthz` en loopback, para el healthcheck de `infra`.** *Depende de S4.*
       *Test:* el emisor levanta un servidor HTTP en `127.0.0.1`, en el puerto de `PUERTO_SALUD`, o
       en 8460 si la variable falta. `GET /healthz` contesta:
       - 503 antes del primer envío;

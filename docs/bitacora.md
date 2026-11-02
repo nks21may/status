@@ -1348,3 +1348,83 @@ GATE_EXIT=0
 - El deploy necesita los pasos de una vez de ADR-0017.
 
 **Sha:** `a552372`
+
+## S11 — El emisor tiene un `/healthz` en loopback, para el healthcheck de `infra` · 2026-11-02
+
+**Archivos:**
+- Código: `src/emisor/salud.ts` y `src/emisor/principal.ts`.
+- Test y documentación: `tests/emisor/salud.test.ts` y `README.md` (el puerto y el `wget` del
+  healthcheck).
+- En el commit siguiente: `docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`, y además `docker build`.
+
+**El pedido.** Vino de la sesión de `infra`, y el usuario aprobó pasarlo y tomarlo:
+- **Su gate** le exige a todo servicio un healthcheck que consulte `127.0.0.1`.
+- **Su deploy** vuelve a la imagen anterior si el contenedor no queda healthy.
+- **El emisor** no tenía puerto, y su I85 (el stack del emisor) dependía de esto.
+
+**Sin ADR.** El contrato entre la imagen y el stack se documenta en el README (ADR-0004).
+- **El puerto:** 8460 por defecto, con `PUERTO_SALUD` para cambiarlo. No está entre los que
+  `infra` dio como ocupados.
+- **Sano** es que el último envío lo haya aceptado el Worker hace 3 minutos o menos.
+
+**Rojo**, el esperado: el servidor de salud no existe.
+
+```
+tests/emisor/salud.test.ts(4,60): error TS2307: Cannot find module '../../src/emisor/salud.ts' or its corresponding type declarations.
+ FAIL  |node| tests/emisor/salud.test.ts [ tests/emisor/salud.test.ts ]
+Error: Cannot find module '../../src/emisor/salud.ts' imported from P:/status/tests/emisor/salud.test.ts
+```
+
+El mismo rojo de `tsc` marcó un error en mi test: `'servidor' is possibly 'undefined'`. Lo corregí
+antes del código.
+
+**La imagen, en Docker.** Construida de nuevo: el gate de adentro pasó los 10 archivos de tests.
+Después armé una red propia con un contenedor de mentira que hace de Prometheus y de Worker, y el
+emisor de verdad al lado. Se usó el `wget` de busybox de la imagen, el mismo del healthcheck de
+`infra`.
+- **El primer intento no sirvió.** Git Bash convirtió las rutas de los volúmenes, así que el
+  contenedor de mentira no arrancó y el emisor no encontró el catálogo. El 503 que dio era
+  correcto para eso, pero no probaba nada. Lo repetí con `MSYS_NO_PATHCONV=1`.
+
+```
+--- con el Worker que acepta:
+Connecting to 127.0.0.1:8460 (127.0.0.1:8460)
+remote file exists
+wget exit=0
+ok
+--- el Worker de mentira:
+envío con Bearer token-de-prueba: 716 bytes
+--- con el Worker que rechaza:
+wget: server returned error: HTTP/1.1 503 Service Unavailable
+wget exit=1
+--- escucha sólo en loopback:
+tcp        0      0 127.0.0.1:8460          0.0.0.0:*               LISTEN
+2026-11-02T21:46:57.026Z El Worker contestó 401:
+```
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  10 passed (10)
+      Tests  56 passed (56)
+   Start at  18:45:41
+   Duration  1.48s (transform 416ms, setup 490ms, import 740ms, tests 1.18s, environment 1ms)
+
+GATE_EXIT=0
+```
+
+**Sha:** `fe1ef47`
