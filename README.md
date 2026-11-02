@@ -29,6 +29,17 @@ envío del emisor, el Worker necesita su token en `.dev.vars`, que no se version
 EMISOR_TOKEN=un-token-de-desarrollo
 ```
 
+## La publicación
+
+En cada push a `main`, el CI ([`publicar.yml`](.github/workflows/publicar.yml)) corre el gate y, si
+pasa, hace dos cosas:
+
+- **El Worker:** aplica las migraciones a la base D1 remota y lo publica.
+- **La imagen del emisor:** publica `ghcr.io/nks21may/status-emisor` desde un runner arm.
+
+Los pasos de una vez (el repo, la base D1, los tokens y el Custom Domain) están en
+[ADR-0017](docs/adr/0017-como-se-publica.md).
+
 ## El emisor
 
 Corre en la VPS y cada minuto le manda al Worker la lista de componentes y su salud de adentro

@@ -4,6 +4,8 @@
   "main": "src/worker/index.ts",
   // La del workerd que trae @cloudflare/vitest-plugin: no puede ser posterior (ADR-0010).
   "compatibility_date": "2026-11-01",
+  // Una sola puerta pública: el Custom Domain status.nicolasdalessandro.dev, creado a mano (ADR-0017).
+  "workers_dev": false,
   // La página: archivos estáticos que no pasan por el Worker (ADR-0012). Lo que no es un archivo de
   // public/, como /api/status, va al Worker, que le devuelve a ASSETS lo que no es suyo.
   "assets": {
@@ -22,7 +24,8 @@
     {
       "binding": "DB",
       "database_name": "status",
-      // El esquema es el de ADR-0009, en migraciones de Wrangler.
+      // El esquema es el de ADR-0009, en migraciones de Wrangler. El database_id de la base remota se
+      // anota acá cuando el usuario la crea, uno de los pasos de una vez de ADR-0017.
       "migrations_dir": "migrations"
     }
   ]

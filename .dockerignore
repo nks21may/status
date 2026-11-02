@@ -1,0 +1,11 @@
+node_modules
+.git
+.wrangler
+.dev.vars
+.gemini
+dist
+coverage
+public/pagina.js
+diseno/maqueta/*.html
+diseno/maqueta/lectura.js
+.impeccable/review
