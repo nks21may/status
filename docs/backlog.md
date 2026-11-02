@@ -36,6 +36,10 @@ son de ella, se anotan acá y **no** entran en su commit.
 npm run gate
 ```
 
+Desde S1 chequea dos programas de TypeScript: el de Node (`tsconfig.json`) y el del Worker
+(`tsconfig.worker.json`), que ve los globales de workerd y no los de Node. ADR-0001 lo describe
+con un solo `tsc --noEmit`: el código gana, y la diferencia queda anotada acá.
+
 ---
 
 ## Fase 0 — Fundaciones
@@ -47,7 +51,7 @@ npm run gate
 
 ## Fase 1 — El status de punta a punta
 
-- [ ] **S1 — El cron prueba cada URL pública y suma el minuto a la historia del día.** *Depende de S0.*
+- [x] **S1 — El cron prueba cada URL pública y suma el minuto a la historia del día.** *Depende de S0.*
       *Test:* con dos componentes en D1, uno cuya URL contesta 200 y otro 503 (con el `fetch`
       simulado), una corrida del handler `scheduled` le suma un minuto medido a los dos y un minuto
       arriba sólo al primero, en la fila del día UTC, y guarda la latencia de la última sonda de
@@ -91,6 +95,29 @@ npm run gate
       [ADR-0007](adr/0007-los-componentes-salen-del-catalogo-del-hub.md).
       ⚠️ **seguridad.**
 
+### Lo que salió de S1
+
+- [ ] **S5 — Sin componentes, el cron termina sin escribir y sin error.** *Depende de S1.*
+      *Test:* con la tabla de componentes vacía (lo normal hasta el primer envío de S4), una
+      corrida del handler `scheduled` resuelve y no deja filas en la historia.
+      **Se espera rojo:** `D1_ERROR: No SQL statements detected.`: `sondear` le pasa a `batch` una
+      lista vacía. Verificado el 2026-11-02 con un test descartable que no quedó en el árbol.
+
+- [ ] **S6 — Una sonda que no contesta cuenta como minuto abajo y no corta las demás.** *Depende de S1.*
+      *Test:* con tres componentes, uno que contesta 200, uno cuyo `fetch` rechaza (error de red) y
+      uno que no contesta en 10 s, una corrida suma un minuto medido a los tres y uno arriba sólo
+      al primero.
+      **Se espera rojo:** el rechazo del `fetch` hace fallar el `Promise.all` de `sondear`, y la
+      corrida no deja ninguna fila.
+      Ver [ADR-0009](adr/0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md): el timeout
+      de 10 s es el de `http_2xx` en blackbox.
+
+- [ ] **S7 — Una corrida repetida para el mismo minuto no suma dos veces.** *Depende de S1.*
+      *Test:* dos corridas con la misma hora programada dejan un minuto medido, no dos.
+      **Se espera rojo:** `minutos_medidos` queda en 2.
+      Es el "en contra" de [ADR-0009](adr/0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md),
+      y necesita una migración nueva (la hora de la última sonda).
+
 ---
 
 ## Parkeados
@@ -110,6 +137,23 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
 - **El lado de `infra`.** El stack del emisor (en la red del host, para llegar a Prometheus por
   loopback), el token cifrado con sops, y el catálogo montado de sólo lectura. *Falta:* que exista
   la imagen (S4); se pide como ítem en el backlog de `infra`.
+- **ADR-0001 se revisa: el pool de Workers cambió de nombre.** `@cloudflare/vitest-pool-workers`
+  está deprecado desde la 0.23.0 (`npm view`, 2026-11-02: "renamed to @cloudflare/vitest-plugin.
+  This package will not receive future updates"), y el gate lo avisa en cada corrida. Su sucesor,
+  `@cloudflare/vitest-plugin` 1.4.12, pide `vitest ^4.1.0 || ^5.0.0`: se cumple el "se revisa si"
+  de ADR-0001, que eligió Vitest 4 porque el pool no soportaba el 5. Las 17 vulnerabilidades que
+  da `npm audit` (`undici`, `zod`, `sharp`, `minimatch`) vienen de lo que fija el pool viejo, y
+  ya no se van a arreglar. S1 se hizo con la 0.23.0, como dice el ADR. *Falta:* que el usuario
+  decida entre el sucesor con Vitest 4 o pasar a Vitest 5 como el hub, con un ADR que reemplace al
+  0001. El cambio es de configuración: los tests usan `cloudflare:test` y `cloudflare:workers`.
+- **ADR-0009 (la historia por día UTC) está propuesto.** Lo escribió la iteración S1 antes del
+  test, como manda el protocolo. *Falta:* que el usuario lo confirme o lo cambie antes de S2, que
+  es el primero que lee la historia, y antes de S7, que le suma una migración. La decisión que más
+  pesa es la del día UTC: la historia agregada no se puede rearmar en la hora local del visitante.
+- **El empaquetado del Worker en el gate.** ADR-0001 dice que se suma al gate cuando llegue el
+  Worker, y el Worker llegó con S1. `wrangler deploy --dry-run --outdir <dir>` empaqueta sin tocar
+  la cuenta, pero el protocolo (punto 0.4) dice "nada de `wrangler deploy`". *Falta:* que el
+  usuario diga si el `--dry-run` entra, o con qué otro comando se empaqueta.
 - **Un abuso de la API o del MCP agota el cupo del día.** Pasados los 100.000 pedidos, la API y el
   MCP contestan error hasta la medianoche UTC. *Falta:* decidir si se cachea en el borde, se pone
   una regla de rate limit (verificar qué da el plan Free), o se acepta.
