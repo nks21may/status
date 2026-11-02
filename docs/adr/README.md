@@ -8,7 +8,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 
 | # | Decisión | Estado |
 |---|---|---|
-| [0001](0001-typescript-vitest-4-y-gate-en-el-host.md) | TypeScript en todo el repo, Vitest 4 con el pool de Workers, gate `npm run gate` en el host | aceptado |
+| [0001](0001-typescript-vitest-4-y-gate-en-el-host.md) | TypeScript en todo el repo, Vitest 4 con el pool de Workers, gate `npm run gate` en el host | aceptado; en parte reemplazado por [0010](0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md) |
 | [0002](0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md) | Corre en un Worker de Cloudflare, fuera de la VPS, en el plan Free | aceptado |
 | [0003](0003-la-vps-empuja-lo-de-adentro.md) | La VPS empuja lo de adentro; el Worker no le pregunta nada a la VPS | aceptado |
 | [0004](0004-el-emisor-vive-aca-y-lo-despliega-infra.md) | El emisor vive en este repo, se publica como imagen en GHCR y lo despliega `infra` | aceptado |
@@ -17,6 +17,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0007](0007-los-componentes-salen-del-catalogo-del-hub.md) | Los componentes salen del catálogo del hub, y los manda el emisor | aceptado |
 | [0008](0008-la-pagina-se-disena-con-impeccable.md) | La página se diseña con la skill `impeccable`, antes de S2 | aceptado |
 | [0009](0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md) | La historia en D1 es una fila por componente y por día UTC; un minuto arriba es un 2xx | propuesto |
+| [0010](0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md) | Los tests del Worker usan `@cloudflare/vitest-plugin` con Vitest 4; el gate chequea dos programas de TypeScript | aceptado |
 
 ## Cuándo escribir uno
 

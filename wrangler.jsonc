@@ -2,8 +2,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "status",
   "main": "src/worker/index.ts",
-  // La del workerd que trae el pool de Workers de Vitest: no puede ser posterior.
-  "compatibility_date": "2026-08-15",
+  // La del workerd que trae @cloudflare/vitest-plugin: no puede ser posterior (ADR-0010).
+  "compatibility_date": "2026-11-01",
   // Una corrida por minuto prueba cada URL pública (ADR-0002).
   "triggers": {
     "crons": ["* * * * *"]

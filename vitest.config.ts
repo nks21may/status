@@ -1,4 +1,4 @@
-import {cloudflareTest, readD1Migrations} from '@cloudflare/vitest-pool-workers';
+import {cloudflareTest, readD1Migrations} from '@cloudflare/vitest-plugin';
 import {defineConfig} from 'vitest/config';
 
 // Las migraciones se leen del disco acá, en Node, y el setup del proyecto del Worker las aplica al

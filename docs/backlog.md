@@ -36,9 +36,9 @@ son de ella, se anotan acá y **no** entran en su commit.
 npm run gate
 ```
 
-Desde S1 chequea dos programas de TypeScript: el de Node (`tsconfig.json`) y el del Worker
-(`tsconfig.worker.json`), que ve los globales de workerd y no los de Node. ADR-0001 lo describe
-con un solo `tsc --noEmit`: el código gana, y la diferencia queda anotada acá.
+Chequea dos programas de TypeScript: el de Node (`tsconfig.json`) y el del Worker
+(`tsconfig.worker.json`), que ve los globales de workerd y no los de Node
+([ADR-0010](adr/0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md)).
 
 ---
 
@@ -137,15 +137,6 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
 - **El lado de `infra`.** El stack del emisor (en la red del host, para llegar a Prometheus por
   loopback), el token cifrado con sops, y el catálogo montado de sólo lectura. *Falta:* que exista
   la imagen (S4); se pide como ítem en el backlog de `infra`.
-- **ADR-0001 se revisa: el pool de Workers cambió de nombre.** `@cloudflare/vitest-pool-workers`
-  está deprecado desde la 0.23.0 (`npm view`, 2026-11-02: "renamed to @cloudflare/vitest-plugin.
-  This package will not receive future updates"), y el gate lo avisa en cada corrida. Su sucesor,
-  `@cloudflare/vitest-plugin` 1.4.12, pide `vitest ^4.1.0 || ^5.0.0`: se cumple el "se revisa si"
-  de ADR-0001, que eligió Vitest 4 porque el pool no soportaba el 5. Las 17 vulnerabilidades que
-  da `npm audit` (`undici`, `zod`, `sharp`, `minimatch`) vienen de lo que fija el pool viejo, y
-  ya no se van a arreglar. S1 se hizo con la 0.23.0, como dice el ADR. *Falta:* que el usuario
-  decida entre el sucesor con Vitest 4 o pasar a Vitest 5 como el hub, con un ADR que reemplace al
-  0001. El cambio es de configuración: los tests usan `cloudflare:test` y `cloudflare:workers`.
 - **ADR-0009 (la historia por día UTC) está propuesto.** Lo escribió la iteración S1 antes del
   test, como manda el protocolo. *Falta:* que el usuario lo confirme o lo cambie antes de S2, que
   es el primero que lee la historia, y antes de S7, que le suma una migración. La decisión que más
