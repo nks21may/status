@@ -91,7 +91,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       Ver [ADR-0006](adr/0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) y
       [ADR-0005](adr/0005-ingles-por-defecto-y-espanol.md).
 
-- [ ] **S4 — La VPS manda lo de adentro: el endpoint autenticado y el emisor.** *Depende de S1.*
+- [x] **S4 — La VPS manda lo de adentro: el endpoint autenticado y el emisor.** *Depende de S1.*
       *Test:* el `POST` de envío sin token, o con uno equivocado, contesta 401 y no escribe nada; con
       el token guarda los componentes del catálogo, la salud de cada uno y la hora del envío. El
       emisor, con una respuesta de Prometheus de ejemplo (`infra_contenedor_sano` con la etiqueta
@@ -128,6 +128,29 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       Es el "en contra" de [ADR-0009](adr/0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md),
       y necesita una migración nueva (la hora de la última sonda).
 
+### Lo que salió de S4
+
+- [ ] **S8 — La API, la página y el MCP muestran el nombre y la descripción de la ficha.** *Depende de S4.*
+      *Test:* con un envío guardado, cada componente de `GET /api/status` trae `name` y
+      `description` (con `en` y `es`, o el que tenga la ficha), y `get_component` del MCP también.
+      La página muestra el nombre en lugar del `id`, y la descripción en el idioma elegido, o en el
+      otro si la ficha trae uno solo. Un componente sin ficha todavía (antes del primer envío) sale
+      con su `id`.
+      **Se espera rojo:** la respuesta de la API no trae `name`.
+      Ver [ADR-0011](adr/0011-la-api-publica-de-estado.md) (lo que trae S4 entra como campos nuevos)
+      y [ADR-0015](adr/0015-el-envio-del-emisor.md).
+
+- [ ] **S9 — La salud de adentro se ve en la API, la página y el MCP.** *Depende de S4, y de que el
+      usuario decida cómo se muestra un contenedor no sano con la URL arriba (`PRODUCT.md` lo deja
+      por decidir) y cuántos minutos sin envío cuentan como corte (ADR-0003): hasta entonces, no es
+      tomable.*
+      *Test:* con un envío reciente, la API trae la salud de adentro de cada componente, y sin envío
+      en los últimos N minutos la trae sin datos; la página y el MCP la muestran como se decida.
+      **Se espera rojo:** la respuesta de la API no trae la salud de adentro.
+      Ver [ADR-0003](adr/0003-la-vps-empuja-lo-de-adentro.md) y
+      [ADR-0014](adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md). El cambio
+      visual pasa por impeccable y actualiza `DESIGN.md` (ADR-0008).
+
 ---
 
 ## Parkeados
@@ -140,10 +163,14 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
   la explicación de qué pasó va por commit en este repo. Las alertas internas (`DiscoCasiLleno`,
   `DeployFallando`) no salen. *Falta:* que el usuario decida si entran y en qué fase. El webhook es
   un cambio en `infra`.
-- **Cómo se publican el Worker, la imagen del emisor y el dominio.** El Worker y la imagen, ¿desde
-  el CI de este repo, con un token de Cloudflare que sólo toque Workers y el de GHCR que ya usan las
-  demás apps? El dominio `status.`, ¿lo crea Wrangler o lo maneja OpenTofu en `infra` (su
-  ADR-0018)? *Falta:* la decisión del usuario, con su ADR acá y en `infra`.
+- **Cómo se publican el Worker, la imagen del emisor y el dominio.**
+  - El Worker y la imagen, ¿desde el CI de este repo, con un token de Cloudflare que sólo toque
+    Workers y el de GHCR que ya usan las demás apps?
+  - El dominio `status.`, ¿lo crea Wrangler o lo maneja OpenTofu en `infra` (su ADR-0018)?
+  - La imagen todavía no existe: el emisor corre con `node src/emisor/principal.ts` (S4), y su
+    `Dockerfile` llega con esta decisión.
+
+  *Falta:* la decisión del usuario, con su ADR acá y en `infra`.
 - **El lado de `infra`.** Cuatro cosas:
   - el stack del emisor, en la red del host, para llegar a Prometheus por loopback;
   - el token, cifrado con sops;

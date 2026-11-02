@@ -964,3 +964,127 @@ GATE_EXIT=0
 ```
 
 **Sha:** `2bd0e08`
+
+## S4 — La VPS manda lo de adentro: el endpoint autenticado y el emisor · 2026-11-02
+
+⚠️ **seguridad.**
+
+**Archivos:**
+- Worker: `src/worker/envio.ts`, `src/worker/index.ts` y `src/worker/env.d.ts`.
+- Contrato y esquema: `src/envio.ts`, que comparten el emisor y el Worker, y
+  `migrations/0004_lo_que_manda_el_emisor.sql`.
+- Emisor: `src/emisor/armar-envio.ts`, `src/emisor/enviar.ts` y `src/emisor/principal.ts`.
+- Tests: `tests/worker/envio.test.ts`, `tests/emisor/emisor.test.ts` y
+  `tests/emisor/ejemplos/` (un catálogo y una respuesta de Prometheus).
+- Configuración y documentación: `vitest.config.ts` (el token de los tests),
+  `docs/adr/0015-el-envio-del-emisor.md`, `docs/adr/README.md` y `README.md` (arranque rápido y las
+  variables del emisor).
+- En el commit siguiente: `docs/backlog.md` (el tilde, S8, S9 y la imagen en el parkeado de
+  publicación) y esta entrada.
+
+**Gate:** `npm run gate`
+
+**Las decisiones, primero.**
+- **De contenedor a stack:** la decidió el usuario y quedó en
+  [ADR-0014](adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md), en su propio commit
+  (`9302de0`). `infra` le suma la etiqueta `stack` a `infra_contenedor_sano`, y el pedido quedó en
+  la nota compartida de la sesión de `infra`.
+- **El envío:** [ADR-0015](adr/0015-el-envio-del-emisor.md) lo escribí antes del test y el usuario
+  lo aceptó. Decide:
+  - la ruta, `POST /api/report`;
+  - el token, el secreto `EMISOR_TOKEN`, comparado con `timingSafeEqual` sobre los SHA-256;
+  - las respuestas: 401 sin leer el cuerpo, 400 si el cuerpo no cumple el contrato, sin escribir
+    nada, y 204 si lo acepta;
+  - la escritura: la lista nueva reemplaza la vieja sin borrar historia, y la hora del envío es la
+    del Worker;
+  - el emisor: si Prometheus no contesta, manda la salud en `null`; si el catálogo no se puede
+    leer, no manda nada.
+
+**Rojo.** El backlog esperaba que la ruta de envío contestara 404 y que el emisor no existiera:
+- **El emisor:** fue lo esperado, no existía.
+- **El endpoint:** los tests cayeron antes de llegar a la ruta, porque la tabla `envios` tampoco
+  existía.
+- **Los 29 tests de antes** siguieron en verde.
+
+El gate corta en `tsc`:
+
+```
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+tests/emisor/emisor.test.ts(3,26): error TS2307: Cannot find module '../../src/emisor/armar-envio.ts' or its corresponding type declarations.
+tests/emisor/emisor.test.ts(4,28): error TS2307: Cannot find module '../../src/emisor/enviar.ts' or its corresponding type declarations.
+tests/emisor/emisor.test.ts(5,26): error TS2307: Cannot find module '../../src/envio.ts' or its corresponding type declarations.
+tests/emisor/emisor.test.ts(51,35): error TS7006: Parameter 'componente' implicitly has an 'any' type.
+tests/emisor/emisor.test.ts(60,35): error TS7006: Parameter 'componente' implicitly has an 'any' type.
+```
+
+Y `npx vitest run`:
+
+```
+     × sin token, con uno equivocado o mal formado contesta 401 y no escribe nada 25ms
+     × con el token guarda los componentes del catálogo, la salud de cada uno y la hora del envío 2ms
+     × un cuerpo que no cumple el contrato contesta 400 y no escribe nada 2ms
+     × sólo acepta POST 1ms
+ FAIL  |node| tests/emisor/emisor.test.ts [ tests/emisor/emisor.test.ts ]
+Error: Cannot find module '../../src/emisor/armar-envio.ts' imported from P:/status/tests/emisor/emisor.test.ts
+ FAIL  |worker| tests/worker/envio.test.ts > el envío del emisor > sin token, con uno equivocado o mal formado contesta 401 y no escribe nada
+Error: D1_ERROR: no such table: envios: SQLITE_ERROR
+ Test Files  2 failed | 6 passed (8)
+      Tests  4 failed | 29 passed (33)
+```
+
+**En el camino a verde.** Un rojo del lint (`preserve-caught-error`): el error de un catálogo que
+no es JSON no llevaba la causa original. Ahora la lleva.
+
+**De punta a punta, en local.** Levanté:
+- el Worker con `wrangler dev`, con la migración 0004 aplicada al D1 local y un token de
+  desarrollo en `.dev.vars`, que después borré;
+- un Prometheus de mentira que servía `tests/emisor/ejemplos/prometheus.json`;
+- el emisor de verdad (`node src/emisor/principal.ts`), contra el catálogo de ejemplo.
+
+Lo que salió:
+
+```
+2026-11-02T18:26:32.696Z Se descarta la ficha de portafolio: la url tiene que empezar con https://.
+```
+
+En el D1 local quedaron:
+- `bot_discord` con `sano_adentro` 0, porque uno de sus contenedores está mal;
+- `museo` con 1;
+- `neonduel` con `null`, porque no tiene series;
+- la hora del envío, en `envios`.
+
+`nonograma`, que el catálogo marca apagado, salió de la lista. Con el token equivocado, el emisor
+anotó `El Worker contestó 401: Unauthorized`.
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  8 passed (8)
+      Tests  40 passed (40)
+   Start at  15:27:30
+   Duration  1.31s (transform 195ms, setup 458ms, import 231ms, tests 825ms, environment 0ms)
+
+GATE_EXIT=0
+```
+
+**Lo que no cubre el gate:**
+- `principal.ts`, la entrada que lee las variables y repite cada minuto, no tiene test; lo cubrió
+  la prueba de punta a punta.
+- La imagen del emisor y el secreto del Worker en Cloudflare siguen en el parkeado de publicación.
+- La API y la página todavía no muestran lo que manda el emisor: son S8 y S9.
+
+**Sha:** `500da8a`
