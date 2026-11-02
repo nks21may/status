@@ -23,6 +23,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0013](0013-el-mcp-habla-json-rpc-a-mano-y-sus-tools.md) | El MCP habla JSON-RPC a mano, sin el SDK, con tres tools de sólo lectura | aceptado |
 | [0014](0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md) | La salud de adentro llega con la etiqueta del stack, que suma `infra` | aceptado |
 | [0015](0015-el-envio-del-emisor.md) | El envío del emisor: `POST /api/report` con un token, y la última lista reemplaza a la anterior | aceptado |
+| [0016](0016-el-estado-con-fallas-y-el-corte-del-emisor.md) | Un servicio con la URL arriba y algo de adentro caído está "con fallas"; el emisor se corta a los 5 minutos | aceptado |
 
 ## Cuándo escribir uno
 

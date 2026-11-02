@@ -140,16 +140,14 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       Ver [ADR-0011](adr/0011-la-api-publica-de-estado.md) (lo que trae S4 entra como campos nuevos)
       y [ADR-0015](adr/0015-el-envio-del-emisor.md).
 
-- [ ] **S9 — La salud de adentro se ve en la API, la página y el MCP.** *Depende de S4, y de que el
-      usuario decida cómo se muestra un contenedor no sano con la URL arriba (`PRODUCT.md` lo deja
-      por decidir) y cuántos minutos sin envío cuentan como corte (ADR-0003): hasta entonces, no es
-      tomable.*
-      *Test:* con un envío reciente, la API trae la salud de adentro de cada componente, y sin envío
-      en los últimos N minutos la trae sin datos; la página y el MCP la muestran como se decida.
+- [ ] **S9 — La salud de adentro se ve en la API, la página y el MCP.** *Depende de S4.*
+      *Test:* con un envío de hace menos de 5 minutos, la API trae `inside` en cada componente, y un
+      componente con la URL arriba y algo de adentro no sano sale `degraded`; sin envío en los
+      últimos 5 minutos, `inside` sale `no_data` y el estado vuelve a salir de afuera. La página
+      dice "Degraded" / "Con fallas" y lo nombra en el estado general.
       **Se espera rojo:** la respuesta de la API no trae la salud de adentro.
-      Ver [ADR-0003](adr/0003-la-vps-empuja-lo-de-adentro.md) y
-      [ADR-0014](adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md). El cambio
-      visual pasa por impeccable y actualiza `DESIGN.md` (ADR-0008).
+      Ver [ADR-0016](adr/0016-el-estado-con-fallas-y-el-corte-del-emisor.md). El cambio visual pasa
+      por impeccable y actualiza `DESIGN.md` (ADR-0008).
 
 ---
 
