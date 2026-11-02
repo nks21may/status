@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-02T16:43:44.725Z",
+  "title": "Design System: Status de nicolasdalessandro.dev",
+  "extensions": {
+    "colorMeta": {
+      "papel": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(59% 0 0)",
+          "oklch(70% 0 0)",
+          "oklch(81% 0 0)",
+          "oklch(92% 0 0)"
+        ]
+      },
+      "papel-oscuro": {
+        "role": "neutral",
+        "displayName": "Papel (tema oscuro)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(26% 0 0)",
+          "oklch(37% 0 0)",
+          "oklch(48% 0 0)",
+          "oklch(59% 0 0)",
+          "oklch(70% 0 0)",
+          "oklch(81% 0 0)",
+          "oklch(92% 0 0)"
+        ]
+      },
+      "tinta": {
+        "role": "primary",
+        "displayName": "Tinta de formulario",
+        "tonalRamp": [
+          "oklch(15% 0.13 288)",
+          "oklch(26% 0.13 288)",
+          "oklch(37% 0.13 288)",
+          "oklch(48% 0.13 288)",
+          "oklch(59% 0.13 288)",
+          "oklch(70% 0.13 288)",
+          "oklch(81% 0.13 288)",
+          "oklch(92% 0.13 288)"
+        ]
+      },
+      "tinta-oscuro": {
+        "role": "primary",
+        "displayName": "Tinta de formulario (tema oscuro)",
+        "tonalRamp": [
+          "oklch(15% 0.13 288)",
+          "oklch(26% 0.13 288)",
+          "oklch(37% 0.13 288)",
+          "oklch(48% 0.13 288)",
+          "oklch(59% 0.13 288)",
+          "oklch(70% 0.13 288)",
+          "oklch(81% 0.13 288)",
+          "oklch(92% 0.13 288)"
+        ]
+      },
+      "trama": {
+        "role": "neutral",
+        "displayName": "Trama de tinta",
+        "tonalRamp": [
+          "oklch(15% 0.02 293)",
+          "oklch(26% 0.02 293)",
+          "oklch(37% 0.02 293)",
+          "oklch(48% 0.02 293)",
+          "oklch(59% 0.02 293)",
+          "oklch(70% 0.02 293)",
+          "oklch(81% 0.02 293)",
+          "oklch(92% 0.02 293)"
+        ]
+      },
+      "trama-oscuro": {
+        "role": "neutral",
+        "displayName": "Trama de tinta (tema oscuro)",
+        "tonalRamp": [
+          "oklch(15% 0.02 293)",
+          "oklch(26% 0.02 293)",
+          "oklch(37% 0.02 293)",
+          "oklch(48% 0.02 293)",
+          "oklch(59% 0.02 293)",
+          "oklch(70% 0.02 293)",
+          "oklch(81% 0.02 293)",
+          "oklch(92% 0.02 293)"
+        ]
+      },
+      "regla-suave": {
+        "role": "neutral",
+        "displayName": "Regla suave",
+        "tonalRamp": [
+          "oklch(15% 0.04 290)",
+          "oklch(26% 0.04 290)",
+          "oklch(37% 0.04 290)",
+          "oklch(48% 0.04 290)",
+          "oklch(59% 0.04 290)",
+          "oklch(70% 0.04 290)",
+          "oklch(81% 0.04 290)",
+          "oklch(92% 0.04 290)"
+        ]
+      },
+      "regla-suave-oscuro": {
+        "role": "neutral",
+        "displayName": "Regla suave (tema oscuro)",
+        "tonalRamp": [
+          "oklch(15% 0.04 290)",
+          "oklch(26% 0.04 290)",
+          "oklch(37% 0.04 290)",
+          "oklch(48% 0.04 290)",
+          "oklch(59% 0.04 290)",
+          "oklch(70% 0.04 290)",
+          "oklch(81% 0.04 290)",
+          "oklch(92% 0.04 290)"
+        ]
+      },
+      "dato": {
+        "role": "neutral",
+        "displayName": "Negro de impresora",
+        "tonalRamp": [
+          "oklch(15% 0.01 295)",
+          "oklch(26% 0.01 295)",
+          "oklch(37% 0.01 295)",
+          "oklch(48% 0.01 295)",
+          "oklch(59% 0.01 295)",
+          "oklch(70% 0.01 295)",
+          "oklch(81% 0.01 295)",
+          "oklch(92% 0.01 295)"
+        ]
+      },
+      "dato-oscuro": {
+        "role": "neutral",
+        "displayName": "Negro de impresora (tema oscuro)",
+        "tonalRamp": [
+          "oklch(15% 0.01 295)",
+          "oklch(26% 0.01 295)",
+          "oklch(37% 0.01 295)",
+          "oklch(48% 0.01 295)",
+          "oklch(59% 0.01 295)",
+          "oklch(70% 0.01 295)",
+          "oklch(81% 0.01 295)",
+          "oklch(92% 0.01 295)"
+        ]
+      },
+      "dato-suave": {
+        "role": "neutral",
+        "displayName": "Negro de impresora suave",
+        "tonalRamp": [
+          "oklch(15% 0.025 295)",
+          "oklch(26% 0.025 295)",
+          "oklch(37% 0.025 295)",
+          "oklch(48% 0.025 295)",
+          "oklch(59% 0.025 295)",
+          "oklch(70% 0.025 295)",
+          "oklch(81% 0.025 295)",
+          "oklch(92% 0.025 295)"
+        ]
+      },
+      "dato-suave-oscuro": {
+        "role": "neutral",
+        "displayName": "Negro de impresora suave (tema oscuro)",
+        "tonalRamp": [
+          "oklch(15% 0.025 295)",
+          "oklch(26% 0.025 295)",
+          "oklch(37% 0.025 295)",
+          "oklch(48% 0.025 295)",
+          "oklch(59% 0.025 295)",
+          "oklch(70% 0.025 295)",
+          "oklch(81% 0.025 295)",
+          "oklch(92% 0.025 295)"
+        ]
+      },
+      "corte": {
+        "role": "tertiary",
+        "displayName": "Bermellón de corte",
+        "tonalRamp": [
+          "oklch(15% 0.18 33)",
+          "oklch(26% 0.18 33)",
+          "oklch(37% 0.18 33)",
+          "oklch(48% 0.18 33)",
+          "oklch(59% 0.18 33)",
+          "oklch(70% 0.18 33)",
+          "oklch(81% 0.18 33)",
+          "oklch(92% 0.18 33)"
+        ]
+      },
+      "corte-oscuro": {
+        "role": "tertiary",
+        "displayName": "Bermellón de corte (tema oscuro)",
+        "tonalRamp": [
+          "oklch(15% 0.18 33)",
+          "oklch(26% 0.18 33)",
+          "oklch(37% 0.18 33)",
+          "oklch(48% 0.18 33)",
+          "oklch(59% 0.18 33)",
+          "oklch(70% 0.18 33)",
+          "oklch(81% 0.18 33)",
+          "oklch(92% 0.18 33)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "resumen": {
+        "displayName": "Resumen",
+        "purpose": "Sólo la frase del estado general; 4.5rem, 3.5rem bajo 64rem y 2.75rem bajo 48rem."
+      },
+      "documento": {
+        "displayName": "Documento",
+        "purpose": "El título del documento (h1) y el del talón, en mayúsculas y tinta."
+      },
+      "emisor": {
+        "displayName": "Emisor",
+        "purpose": "El nombre del sitio en el encabezado; 1rem al 100 % de ancho en el celular."
+      },
+      "cuenta": {
+        "displayName": "Cuenta",
+        "purpose": "La línea bajo el estado general, en dato suave."
+      },
+      "dato": {
+        "displayName": "Dato",
+        "purpose": "Los valores de la grilla de servicios; nombre y disponibilidad a 650."
+      },
+      "base": {
+        "displayName": "Base",
+        "purpose": "Texto corrido de la página, con cifras tabulares, a 60ch."
+      },
+      "chico": {
+        "displayName": "Chico",
+        "purpose": "Host, descripción del catálogo y renglón de lectura del gráfico."
+      },
+      "rotulo": {
+        "displayName": "Rótulo",
+        "purpose": "El nombre impreso de cada campo del formulario, en tinta; el botón usa la receta a 700."
+      },
+      "eje": {
+        "displayName": "Eje",
+        "purpose": "Cifras del eje (Chivo Mono) y meses (Archivo 600, 87.5 %, mayúsculas) del gráfico."
+      }
+    },
+    "shadows": [
+      {
+        "name": "anillo-elegido",
+        "value": "0 0 0 1px var(--papel), 0 0 0 2px var(--tinta)",
+        "purpose": "Marca de selección del día elegido en el gráfico de consumo. No es elevación: el sistema no tiene sombras de profundidad."
+      }
+    ],
+    "motion": [
+      {
+        "name": "paso-seco",
+        "value": "none",
+        "purpose": "Sin transiciones ni easing: todo cambio de estado es instantáneo."
+      },
+      {
+        "name": "aviso-copia",
+        "value": "2000ms",
+        "purpose": "Lo que el botón queda diciendo \"Copiado\" o el error antes de volver a su texto; el cambio es seco."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "angosto",
+        "value": "63.99rem",
+        "purpose": "max-width: los campos del encabezado bajan a un renglón; resumen a 3.5rem."
+      },
+      {
+        "name": "celular",
+        "value": "47.99rem",
+        "purpose": "max-width: una columna, resumen a 2.75rem y 58svh, gráfico de 2.25rem."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón de copiar",
+      "kind": "button",
+      "refersTo": "boton",
+      "description": "El único botón: copia la URL del MCP o el comando del talón.",
+      "html": "<button class=\"ds-boton\" type=\"button\">Copy</button>",
+      "css": ".ds-boton { padding: 0.3125rem 0.75rem; border: 1px solid var(--tinta); border-radius: 0; background: var(--papel); font-family: \"Archivo\", \"Arial Narrow\", sans-serif; font-size: 0.75rem; font-weight: 600; font-stretch: 87.5%; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tinta); font-weight: 700; cursor: pointer; } .ds-boton:hover { background: var(--trama); } .ds-boton:active { background: var(--tinta); color: var(--papel); } .ds-boton:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }"
+    },
+    {
+      "name": "Selector de idioma",
+      "kind": "nav",
+      "refersTo": "idioma",
+      "description": "Dos casilleros EN y ES dentro del encabezado; el actual en tinta llena.",
+      "html": "<nav class=\"ds-idioma\" aria-label=\"Language\"><a href=\"#\" aria-current=\"page\">EN</a><a href=\"#\">ES</a></nav>",
+      "css": ".ds-idioma { display: flex; border: 1px solid var(--tinta); width: max-content; } .ds-idioma a { display: grid; place-items: center; min-width: 3.25rem; padding: 0.75rem; font-family: \"Archivo\", \"Arial Narrow\", sans-serif; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.08em; color: var(--tinta); text-decoration: none; } .ds-idioma a + a { border-left: 1px solid var(--tinta); } .ds-idioma a:hover { background: var(--trama); } .ds-idioma a[aria-current=\"page\"] { background: var(--tinta); color: var(--papel); } .ds-idioma a:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }"
+    },
+    {
+      "name": "Campo",
+      "kind": "custom",
+      "refersTo": "campo",
+      "description": "El par rótulo y valor del formulario: rótulo en tinta, valor impreso en negro.",
+      "html": "<dl class=\"ds-campo\"><dt>Issued</dt><dd>2 Nov 2026, 13:05 UTC</dd></dl>",
+      "css": ".ds-campo { display: flex; flex-direction: column; gap: 0.25rem; margin: 0; padding: 0.75rem 1.5rem; border: 1px solid var(--tinta); width: max-content; } .ds-campo dt { font-family: \"Archivo\", \"Arial Narrow\", sans-serif; font-size: 0.75rem; font-weight: 600; font-stretch: 87.5%; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tinta); } .ds-campo dd { margin: 0; font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 0.9375rem; color: var(--dato); white-space: nowrap; }"
+    },
+    {
+      "name": "Recuadro del estado general",
+      "kind": "card",
+      "refersTo": "resumen-corte",
+      "description": "El total de la boleta: lo único grande. En bermellón cuando algo está caído.",
+      "html": "<section class=\"ds-resumen\" role=\"status\"><h2><a href=\"#\">Neonduel</a> is down.</h2><p>5 of 6 up · last reading 13:05 UTC</p></section>",
+      "css": ".ds-resumen { display: flex; flex-direction: column; justify-content: center; min-height: 16rem; padding: 3rem 2rem; border: 1px solid var(--tinta); background: var(--trama); } .ds-resumen h2 { margin: 0; font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 4.5rem; font-weight: 650; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; color: var(--corte); } .ds-resumen h2 a { color: inherit; text-decoration-color: currentColor; text-decoration-thickness: 0.05em; text-underline-offset: 0.12em; } .ds-resumen h2 a:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; } .ds-resumen p { margin: 1rem 0 0; font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 1.25rem; color: var(--dato-suave); }"
+    },
+    {
+      "name": "Estado",
+      "kind": "chip",
+      "refersTo": "estado-caido",
+      "description": "Marca cuadrada y palabra: negro si anda, bermellón si está caído, casillero discontinuo en tinta si no hay datos.",
+      "html": "<span class=\"ds-estado\"><span class=\"ds-marca\"></span>Up</span> <span class=\"ds-estado ds-estado--caido\"><span class=\"ds-marca\"></span>Down</span> <span class=\"ds-estado ds-estado--sin-datos\"><span class=\"ds-marca\"></span>No data</span>",
+      "css": ".ds-estado { display: inline-flex; align-items: center; gap: 0.5rem; margin-right: 1.5rem; font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 1.0625rem; font-weight: 650; color: var(--dato); } .ds-marca { flex: none; width: 0.6875rem; height: 0.6875rem; background: var(--dato); } .ds-estado--caido { color: var(--corte); } .ds-estado--caido .ds-marca { background: var(--corte); } .ds-estado--sin-datos { color: var(--tinta); font-weight: 450; } .ds-estado--sin-datos .ds-marca { background: none; outline: 1px dashed var(--tinta); outline-offset: -1px; }"
+    },
+    {
+      "name": "Gráfico de consumo",
+      "kind": "custom",
+      "refersTo": "grafico-consumo",
+      "description": "Una barra por día UTC sobre un eje de 95 % a 100 %: negro lleno, corte en bermellón arriba (2 px mínimo), casillero punteado sin lectura, anillo en el día elegido.",
+      "html": "<div class=\"ds-grafico\" role=\"slider\" tabindex=\"0\" aria-label=\"Daily availability\" aria-valuemin=\"1\" aria-valuemax=\"12\" aria-valuenow=\"12\"><span class=\"ds-dia ds-dia--sin-lectura\"></span><span class=\"ds-dia ds-dia--sin-lectura\"></span><span class=\"ds-dia ds-dia--sin-lectura\"></span><span class=\"ds-dia\"></span><span class=\"ds-dia\"></span><span class=\"ds-dia ds-dia--corte\" style=\"--h: 0.4\"></span><span class=\"ds-dia\"></span><span class=\"ds-dia ds-dia--corte\" style=\"--h: 0.97\"></span><span class=\"ds-dia\"></span><span class=\"ds-dia\"></span><span class=\"ds-dia\"></span><span class=\"ds-dia ds-dia--elegido\"></span></div>",
+      "css": ".ds-grafico { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2px; width: 18rem; height: 2.75rem; border-bottom: 1px solid var(--tinta); cursor: crosshair; } .ds-grafico:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; } .ds-dia { --c: calc((1 - var(--h, 1)) * 100%); background: var(--dato); } .ds-dia--corte { background: linear-gradient(to bottom, var(--corte) 0 max(2px, var(--c)), var(--dato) 0); } .ds-dia--sin-lectura { background: repeating-linear-gradient(to top, var(--tinta) 0 2px, transparent 2px 5px) center bottom / 1px 100% no-repeat; } .ds-dia--elegido { box-shadow: 0 0 0 1px var(--papel), 0 0 0 2px var(--tinta); }"
+    },
+    {
+      "name": "Talón troquelado",
+      "kind": "custom",
+      "refersTo": "talon",
+      "description": "El talón al pie, separado por la línea troquelada, con los campos para sumar el MCP.",
+      "html": "<section class=\"ds-talon\"><h2>Check it from Claude</h2><p>This status is also a public, read-only MCP server.</p><div class=\"ds-talon__campo\"><span>MCP server</span><code>https://status.nicolasdalessandro.dev/mcp</code></div></section>",
+      "css": ".ds-talon { padding-top: 2rem; border-top: 1px dashed var(--tinta); } .ds-talon h2 { margin: 0; font-family: \"Archivo\", \"Arial Narrow\", sans-serif; font-size: 1.375rem; font-weight: 600; font-stretch: 87.5%; letter-spacing: 0.03em; line-height: 1.15; text-transform: uppercase; color: var(--tinta); } .ds-talon p { margin: 0.5rem 0 0; max-width: 60ch; font-family: \"Archivo\", \"Arial Narrow\", sans-serif; font-size: 0.9375rem; color: var(--dato); } .ds-talon__campo { display: flex; flex-direction: column; gap: 0.25rem; margin-top: 1.5rem; padding: 0.75rem 1rem 1rem; border: 1px solid var(--tinta); } .ds-talon__campo span { font-family: \"Archivo\", \"Arial Narrow\", sans-serif; font-size: 0.75rem; font-weight: 600; font-stretch: 87.5%; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tinta); } .ds-talon__campo code { font-family: \"Chivo Mono\", ui-monospace, monospace; font-size: 1.375rem; font-weight: 550; letter-spacing: -0.01em; color: var(--dato); overflow-wrap: anywhere; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La boleta del servicio",
+    "overview": "La página es la factura de un servicio público. El formulario preimpreso (reglas, recuadros, rótulos, paneles de trama) va en una sola tinta violeta; encima, la impresora de la compañía llenó los campos en negro con letra monoespaciada. Esa división es el sistema entero: si algo es parte de la plantilla, es violeta y va en Archivo; si salió de una medición o de una ficha, es negro y va en Chivo Mono. El color de alarma aparece sólo cuando algo está caído, nunca para decir que todo anda.\n\nLa densidad es la de un formulario: todo a tamaño de boleta, salvo el total. El recuadro del estado general es lo único grande de la hoja, como el importe a pagar, y en el celular, junto con el encabezado, ocupa la primera pantalla. La impresión es plana: papel blanco liso en el tema claro, sin sombras de profundidad, sin grano, sin papel simulado. Los cambios de estado son pasos secos, sin transiciones ni easing; la impresora no anima.\n\nCon `prefers-color-scheme: dark` es la misma boleta impresa en tinta clara sobre papel violeta casi negro: cambian los siete valores de color, nada más. Se rechaza explícitamente la banda verde y la lista de barras verdes de los status de siempre.",
+    "keyCharacteristics": [
+      "Dos tintas con dos tipografías: la del formulario (violeta, Archivo) y la de la impresora (negro, Chivo Mono).",
+      "Bermellón sólo para lo caído; ningún verde en ningún lado.",
+      "Un único elemento grande: el estado general.",
+      "Recuadros de regla de 1 px, esquinas a escuadra, paneles de trama.",
+      "Lo que no tiene lectura es un casillero vacío punteado, distinto de lo caído.",
+      "Sin sombras, sin textura, sin transiciones."
+    ],
+    "rules": [
+      {
+        "name": "La regla del color que avisa",
+        "body": "El bermellón aparece sólo si algo está caído. Una página donde todo anda no tiene ni un píxel de bermellón, y tampoco tiene verde: \"anda\" se imprime en negro.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de las dos tintas",
+        "body": "Si es parte de la plantilla, va en tinta violeta; si salió de una medición o de una ficha, va en negro de impresora. Un dato nunca se imprime en violeta, salvo la ausencia de dato (\"sin datos\"), que es el formulario vacío.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla del casillero vacío",
+        "body": "Un día o un estado sin lectura nunca se pinta como caído ni como andando: es el casillero punteado de la tinta, vacío.",
+        "section": "colors"
+      },
+      {
+        "name": "La regla de la impresora",
+        "body": "Todo lo que viene de un dato (cifras, horas, nombres de servicio, hosts y las descripciones del catálogo, que son datos de la ficha) va en Chivo Mono. Archivo es sólo para la plantilla y el texto propio de la página.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla del total",
+        "body": "Lo único grande es el estado general. Ningún otro texto supera 1.375rem.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla del rótulo de campo",
+        "body": "Un rótulo nombra un campo que tiene su valor al lado o debajo (Emitido, Período, Servidor MCP, Lectura). Nunca va suelto encima de un título como antetítulo: la frase del estado general es el `h2` sin rótulo.",
+        "section": "typography"
+      },
+      {
+        "name": "La regla de la impresión plana",
+        "body": "Ningún elemento flota sobre otro. Para separar se usa una regla de 1 px o un panel de trama, nunca una sombra.",
+        "section": "elevation"
+      },
+      {
+        "name": "La regla del paso seco",
+        "body": "No hay transiciones, animaciones ni easing. Un hover, una selección o el \"Copiado\" del botón cambian de golpe.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do imprimir en tinta violeta todo lo que es plantilla (reglas, recuadros, rótulos, ejes) y en negro de impresora, con Chivo Mono, todo lo que viene de un dato.",
+      "Do reservar el bermellón para lo caído: la frase, la palabra y la marca del estado, y la parte faltante de un día, con 2 px como mínimo.",
+      "Do dibujar un día sin lectura como el casillero punteado en tinta, y decir \"sin datos\" en vez de suponer que anda.",
+      "Do mantener el estado general como lo único grande de la hoja, y dueño de la primera pantalla del celular junto con el encabezado.",
+      "Do usar reglas de 1 px y paneles de trama para separar, con esquinas a escuadra.",
+      "Do cambiar los estados en pasos secos y escribir el tema oscuro como la misma boleta con los valores `*-oscuro`.",
+      "Do acompañar cada estado con su palabra."
+    ],
+    "donts": [
+      "Don't usar verde, ni para \"anda\" ni para nada.",
+      "Don't usar sombras de profundidad, grano, textura ni papel simulado.",
+      "Don't agregar transiciones, animaciones ni easing.",
+      "Don't redondear esquinas.",
+      "Don't poner un rótulo encima de un título como antetítulo: los rótulos son nombres de campo.",
+      "Don't pintar un día sin lectura como caído, ni como andando.",
+      "Don't agregar una tercera tipografía ni cargar fuentes desde un CDN.",
+      "Don't llevar a la página real la banda de aviso de la maqueta (\"Mockup: demo data…\") ni sus links de escenario: son sólo de la maqueta."
+    ]
+  }
+}

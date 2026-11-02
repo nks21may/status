@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "maqueta",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "4610", "--bind", "127.0.0.1", "--directory", "diseno/maqueta"],
+      "port": 4610
+    }
+  ]
+}

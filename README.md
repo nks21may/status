@@ -40,6 +40,8 @@ Con TDD, un ítem por iteración:
 - **Qué falta:** [docs/backlog.md](docs/backlog.md)
 - **Qué se hizo y con qué evidencia:** [docs/bitacora.md](docs/bitacora.md)
 - **Por qué está así:** [docs/adr/](docs/adr/)
+- **Cómo se ve:** [PRODUCT.md](PRODUCT.md), [DESIGN.md](DESIGN.md) y la maqueta de
+  [diseno/](diseno/README.md)
 
 Una iteración se corre con `/tdd` (el protocolo está en
 [.claude/commands/tdd.md](.claude/commands/tdd.md)). El branch de trabajo es

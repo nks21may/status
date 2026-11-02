@@ -61,15 +61,19 @@ Chequea dos programas de TypeScript: el de Node (`tsconfig.json`) y el del Worke
       ([ADR-0001](adr/0001-typescript-vitest-4-y-gate-en-el-host.md)). Ver
       [ADR-0002](adr/0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md).
 
-- [ ] **S2 — La API pública da el estado y los 90 días de cada componente, y la página lo muestra.** *Depende de S1, y
-      de que existan `PRODUCT.md` y `DESIGN.md` ([ADR-0008](adr/0008-la-pagina-se-disena-con-impeccable.md)):
-      hasta entonces, no es tomable.*
+- [ ] **S2 — La API pública da el estado y los 90 días de cada componente, y la página lo muestra.** *Depende de S1.*
       *Test:* con D1 sembrado, el `GET` de la API de estado contesta 200 con una entrada por
       componente: su estado actual y una por cada uno de los últimos 90 días, en inglés y sin campos
       internos. Un componente sin sonda en los últimos minutos sale sin datos, no como arriba. La
       página, servida como archivo estático, pide esa API y muestra un renglón por componente, en
       inglés, y en español si el visitante lo elige.
       **Se espera rojo:** la ruta de la API contesta 404.
+      La página se arma contra `PRODUCT.md` y `DESIGN.md`
+      ([ADR-0008](adr/0008-la-pagina-se-disena-con-impeccable.md)), y se lleva `estilos.css` y las
+      tipografías de la maqueta de [`diseno/`](../diseno/README.md). La maqueta muestra lo que la API
+      tiene que dar: la URL de la ficha (la descripción llega con el emisor, en S4), la hora y la
+      latencia de la última sonda, los minutos medidos y arriba de cada día, y la disponibilidad de
+      los 90 días.
       Ver [ADR-0002](adr/0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md) y
       [ADR-0005](adr/0005-ingles-por-defecto-y-espanol.md).
 

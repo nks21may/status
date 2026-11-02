@@ -1,0 +1,804 @@
+/*
+ * La boleta del servicio: lo fijo (reglas, rótulos, recuadros) va impreso en la tinta violeta del
+ * formulario; lo medido, en negro con letra de impresora encima. El bermellón es sólo para lo
+ * caído, y lo que no tiene lectura queda como el casillero punteado del formulario.
+ */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("fuentes/archivo-latin-wdth-normal.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Chivo Mono";
+  src: url("fuentes/chivo-mono-latin-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+
+  /* El papel y las dos tintas: la del formulario y la de la impresora. */
+  --papel: #ffffff;
+  --tinta: #4b3c8f;
+  --trama: #eeebf6;
+  --regla-suave: #d3cce8;
+  --dato: #17151c;
+  --dato-suave: #4b4659;
+  --corte: #b8341a;
+
+  --forma: "Archivo", "Arial Narrow", sans-serif;
+  --impresora: "Chivo Mono", ui-monospace, monospace;
+
+  /* Escala fija: el resumen es lo único grande, lo demás va a tamaño de formulario. */
+  --t-rotulo: 0.75rem;
+  --t-chico: 0.8125rem;
+  --t-base: 0.9375rem;
+  --t-dato: 1.0625rem;
+  --t-titulo: 1.375rem;
+  --t-cuenta: 1.25rem;
+  /* El estado general es el total de la boleta: lo único grande de la hoja. */
+  --t-resumen: 4.5rem;
+
+  --e-1: 0.25rem;
+  --e-2: 0.5rem;
+  --e-3: 0.75rem;
+  --e-4: 1rem;
+  --e-5: 1.5rem;
+  --e-6: 2rem;
+  --e-7: 3rem;
+  --e-8: 4.5rem;
+
+  --columnas: minmax(0, 1fr) 7.5rem 11.5rem 10rem;
+  --alto-grafico: 2.75rem;
+}
+
+/* De noche, la misma boleta impresa en tinta clara sobre papel violeta casi negro. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --papel: #15121f;
+    --tinta: #b4a8ef;
+    --trama: #221d33;
+    --regla-suave: #3e3560;
+    --dato: #f2f0f8;
+    --dato-suave: #c4bfd2;
+    --corte: #ff7a5c;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--tinta) var(--papel);
+}
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--dato);
+  font-family: var(--forma);
+  font-size: var(--t-base);
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--tinta);
+  color: var(--papel);
+}
+
+:focus-visible {
+  outline: 2px solid var(--tinta);
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--tinta);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+ol,
+ul {
+  margin: 0;
+}
+
+ol,
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* El rótulo del formulario: chico, en versalitas de la tinta, semicondensado. */
+.rotulo {
+  font-family: var(--forma);
+  font-size: var(--t-rotulo);
+  font-weight: 600;
+  font-stretch: 87.5%;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+
+/* Lo impreso por la impresora: todo lo que sale de un dato. */
+.impreso {
+  font-family: var(--impresora);
+  font-weight: 450;
+  color: var(--dato);
+}
+
+.hoja {
+  max-width: 66rem;
+  margin: 0 auto;
+  padding: var(--e-5) var(--e-6) var(--e-8);
+}
+
+/* Sólo en la maqueta: el aviso de que los datos son de demostración. */
+.aviso {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-1) var(--e-4);
+  align-items: baseline;
+  margin-bottom: var(--e-5);
+  padding-bottom: var(--e-3);
+  border-bottom: 1px dashed var(--tinta);
+}
+
+.aviso__escenarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-1) var(--e-3);
+}
+
+.aviso__escenarios a[aria-current="page"] {
+  text-decoration: none;
+  color: var(--dato);
+}
+
+/* El encabezado: emisor, campos de la boleta e idioma, en una grilla de reglas. */
+.encabezado {
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) auto auto;
+  border: 1px solid var(--tinta);
+}
+
+.emisor {
+  padding: var(--e-4) var(--e-5);
+}
+
+.emisor__nombre {
+  font-family: var(--forma);
+  font-size: 1.125rem;
+  font-weight: 800;
+  font-stretch: 106%;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--tinta);
+}
+
+.emisor__documento {
+  margin-top: var(--e-1);
+  font-size: var(--t-titulo);
+  font-weight: 600;
+  font-stretch: 87.5%;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+
+.campos {
+  display: grid;
+  grid-auto-flow: column;
+  border-left: 1px solid var(--tinta);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--e-1);
+  padding: var(--e-3) var(--e-5);
+}
+
+.campo + .campo {
+  border-left: 1px solid var(--tinta);
+}
+
+.campo dd {
+  font-family: var(--impresora);
+  font-size: var(--t-base);
+  white-space: nowrap;
+}
+
+.idioma {
+  display: flex;
+  border-left: 1px solid var(--tinta);
+}
+
+.idioma a {
+  display: grid;
+  place-items: center;
+  min-width: 3.25rem;
+  padding: 0 var(--e-3);
+  font-size: var(--t-chico);
+  font-weight: 700;
+  font-stretch: 100%;
+  letter-spacing: 0.08em;
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.idioma a + a {
+  border-left: 1px solid var(--tinta);
+}
+
+.idioma a:hover {
+  background: var(--trama);
+}
+
+.idioma a[aria-current="page"] {
+  background: var(--tinta);
+  color: var(--papel);
+}
+
+/* Un recuadro del formulario. */
+.recuadro {
+  border: 1px solid var(--tinta);
+}
+
+/* El estado general: lo más grande de la página, como el total de la boleta. */
+.resumen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 16rem;
+  margin-top: var(--e-5);
+  padding: var(--e-7) var(--e-6);
+  background: var(--trama);
+}
+
+.resumen__frase {
+  font-family: var(--impresora);
+  font-size: var(--t-resumen);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  text-wrap: balance;
+  color: var(--dato);
+}
+
+.resumen__frase a {
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 0.05em;
+  text-underline-offset: 0.12em;
+}
+
+.resumen--corte .resumen__frase {
+  color: var(--corte);
+}
+
+.resumen--sin-datos .resumen__frase {
+  color: var(--tinta);
+}
+
+.resumen__cuenta {
+  margin-top: var(--e-4);
+  font-family: var(--impresora);
+  font-size: var(--t-cuenta);
+  color: var(--dato-suave);
+}
+
+/* La grilla de servicios. */
+.servicios {
+  margin-top: var(--e-7);
+}
+
+.servicios__cabecera {
+  display: grid;
+  grid-template-columns: var(--columnas);
+  gap: var(--e-4);
+  padding: var(--e-2) var(--e-4);
+  border: 1px solid var(--tinta);
+  background: var(--trama);
+}
+
+.servicios__cabecera span:nth-child(n + 3) {
+  text-align: right;
+}
+
+.servicio {
+  padding: var(--e-4) var(--e-4) var(--e-5);
+  border: 1px solid var(--tinta);
+  border-top: 0;
+}
+
+.servicio__fila {
+  display: grid;
+  grid-template-columns: var(--columnas);
+  gap: var(--e-4);
+  align-items: start;
+}
+
+.servicio__nombre {
+  font-family: var(--impresora);
+  font-size: var(--t-dato);
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.servicio__nombre a {
+  text-decoration: none;
+}
+
+.servicio__nombre a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--tinta);
+}
+
+.servicio__direccion {
+  margin-top: 0.125rem;
+  font-family: var(--impresora);
+  font-size: var(--t-chico);
+  color: var(--dato-suave);
+  overflow-wrap: anywhere;
+}
+
+.servicio__descripcion {
+  margin-top: var(--e-1);
+  max-width: 60ch;
+  font-family: var(--impresora);
+  font-size: var(--t-chico);
+  text-wrap: pretty;
+  color: var(--dato-suave);
+}
+
+.servicio__datos {
+  grid-column: 2 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+}
+
+.dato dt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.dato dd {
+  font-family: var(--impresora);
+  font-size: var(--t-dato);
+  line-height: 1.25;
+}
+
+.dato:nth-child(n + 2) dd {
+  text-align: right;
+}
+
+.dato--disponibilidad dd {
+  font-weight: 650;
+}
+
+/* El estado: una marca y su palabra. Lo caído se imprime en bermellón; lo sin datos no se imprime. */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  font-weight: 650;
+}
+
+.marca {
+  flex: none;
+  width: 0.6875rem;
+  height: 0.6875rem;
+  background: var(--dato);
+}
+
+.estado--caido {
+  color: var(--corte);
+}
+
+.estado--caido .marca {
+  background: var(--corte);
+}
+
+.estado--sin-datos {
+  color: var(--tinta);
+  font-weight: 450;
+}
+
+.estado--sin-datos .marca {
+  background: none;
+  outline: 1px dashed var(--tinta);
+  outline-offset: -1px;
+}
+
+/* El gráfico de consumo de 90 días, como el de la boleta: una barra por día. */
+.consumo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--e-3);
+  margin-top: var(--e-4);
+}
+
+.consumo__eje {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: var(--alto-grafico);
+  font-family: var(--impresora);
+  font-size: 0.6875rem;
+  line-height: 1;
+  text-align: right;
+  color: var(--tinta);
+}
+
+.grafico {
+  display: grid;
+  grid-template-columns: repeat(90, minmax(0, 1fr));
+  gap: 2px;
+  height: var(--alto-grafico);
+  border-bottom: 1px solid var(--tinta);
+  cursor: crosshair;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.dia {
+  --c: calc((1 - var(--h, 1)) * 100%);
+  background: var(--dato);
+}
+
+/* Lo que faltó para el 100 % va en bermellón arriba, con 2 px como mínimo para que se vea. */
+.dia--corte {
+  background: linear-gradient(to bottom, var(--corte) 0 max(2px, var(--c)), var(--dato) 0);
+}
+
+/* Un día sin lectura es el casillero vacío del formulario: una línea punteada. */
+.dia--sin-lectura {
+  background: repeating-linear-gradient(to top, var(--tinta) 0 2px, transparent 2px 5px) center
+    bottom / 1px 100% no-repeat;
+}
+
+.dia--elegido {
+  box-shadow:
+    0 0 0 1px var(--papel),
+    0 0 0 2px var(--tinta);
+}
+
+.consumo__meses {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(90, minmax(0, 1fr));
+  margin-top: var(--e-1);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-stretch: 87.5%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+
+/* Cada mes empieza con una raya colgada del eje, y su nombre va debajo. */
+.consumo__meses span {
+  position: relative;
+  grid-row: 1;
+  padding-top: 0.375rem;
+  white-space: nowrap;
+}
+
+.consumo__meses span::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 0.25rem;
+  background: var(--tinta);
+}
+
+/* El mes que recién empieza no tiene lugar después de su raya: su nombre se apoya en el final. */
+.consumo__meses .mes--corto {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.consumo__lectura {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--e-3);
+  align-items: baseline;
+  margin-top: var(--e-2);
+}
+
+.consumo__valor {
+  font-family: var(--impresora);
+  font-size: var(--t-chico);
+}
+
+.consumo__valor span {
+  white-space: nowrap;
+}
+
+/* El talón, separado por la línea troquelada. */
+.talon {
+  margin-top: var(--e-8);
+  padding-top: var(--e-6);
+  border-top: 1px dashed var(--tinta);
+}
+
+.talon__titulo {
+  font-size: var(--t-titulo);
+  font-weight: 600;
+  font-stretch: 87.5%;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--tinta);
+}
+
+.talon__texto {
+  margin-top: var(--e-2);
+  max-width: 60ch;
+}
+
+.talon__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: var(--e-5);
+  border: 1px solid var(--tinta);
+  background: var(--tinta);
+}
+
+.talon__campos .campo {
+  justify-content: start;
+  padding: var(--e-3) var(--e-4) var(--e-4);
+  background: var(--papel);
+}
+
+.talon__campos .campo + .campo {
+  border-left: 0;
+}
+
+.talon__campos .campo--ancho {
+  grid-column: 1 / -1;
+}
+
+.talon__campos dd {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.codigo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2) var(--e-4);
+  align-items: center;
+}
+
+.codigo__texto {
+  font-family: var(--impresora);
+  font-size: 1.375rem;
+  font-weight: 550;
+  letter-spacing: -0.01em;
+}
+
+.codigo__texto--comando {
+  font-size: var(--t-dato);
+  font-weight: 450;
+  letter-spacing: 0;
+}
+
+.boton {
+  padding: 0.3125rem var(--e-3);
+  border: 1px solid var(--tinta);
+  border-radius: 0;
+  background: var(--papel);
+  font: inherit;
+  font-size: var(--t-rotulo);
+  font-weight: 700;
+  font-stretch: 87.5%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.boton:hover {
+  background: var(--trama);
+}
+
+.boton:active {
+  background: var(--tinta);
+  color: var(--papel);
+}
+
+.boton[data-estado="copiado"] {
+  background: var(--tinta);
+  color: var(--papel);
+}
+
+.boton[data-estado="error"] {
+  border-color: var(--corte);
+  color: var(--corte);
+}
+
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2) var(--e-5);
+  align-items: baseline;
+  margin-top: var(--e-7);
+}
+
+.pie__links {
+  display: flex;
+  gap: var(--e-4);
+}
+
+/* Con poco ancho, los campos del encabezado bajan a un renglón propio. */
+@media (max-width: 63.99rem) {
+  :root {
+    --t-resumen: 3.5rem;
+  }
+
+  .encabezado {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .campos {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-auto-flow: row;
+    grid-template-columns: 1fr 1fr;
+    border-left: 0;
+    border-top: 1px solid var(--tinta);
+  }
+}
+
+/* En el celular: una columna, y el estado general es dueño de la primera pantalla. */
+@media (max-width: 47.99rem) {
+  :root {
+    --t-resumen: 2.75rem;
+    --t-cuenta: var(--t-dato);
+    --alto-grafico: 2.25rem;
+  }
+
+  .hoja {
+    padding: var(--e-4) var(--e-4) var(--e-7);
+  }
+
+  .emisor {
+    padding: var(--e-3) var(--e-4);
+  }
+
+  .emisor__nombre {
+    font-size: 1rem;
+    font-stretch: 100%;
+  }
+
+  .campo {
+    padding: var(--e-2) var(--e-4);
+  }
+
+  .campo dd {
+    font-size: var(--t-chico);
+    white-space: normal;
+  }
+
+  /* Con el encabezado, el estado general llena la primera pantalla y apenas asoma un servicio. */
+  .resumen {
+    min-height: 58svh;
+    margin-top: var(--e-4);
+    padding: var(--e-6) var(--e-4);
+  }
+
+  .servicios {
+    margin-top: var(--e-6);
+  }
+
+  .servicios__cabecera {
+    display: none;
+  }
+
+  .servicio {
+    border-top: 1px solid var(--tinta);
+  }
+
+  .servicio + .servicio {
+    border-top: 0;
+  }
+
+  .servicio__fila {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--e-3);
+  }
+
+  .servicio__datos {
+    grid-column: 1;
+    grid-template-columns: minmax(0, 1fr);
+    border-top: 1px solid var(--regla-suave);
+  }
+
+  .dato {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--e-3);
+    padding: var(--e-2) 0;
+    border-bottom: 1px solid var(--regla-suave);
+  }
+
+  .dato dt {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+
+  .dato dd {
+    font-size: var(--t-base);
+    text-align: right;
+  }
+
+  .grafico {
+    gap: 1px;
+  }
+
+
+  .talon {
+    margin-top: var(--e-7);
+  }
+
+  .talon__campos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .codigo__texto {
+    font-size: 0.875rem;
+  }
+
+  .codigo__texto--comando {
+    font-size: var(--t-chico);
+  }
+}

@@ -10,3 +10,10 @@ logs/
 # El estado local de Wrangler (D1 y la caché de Miniflare) y sus secretos de desarrollo.
 .wrangler/
 .dev.vars
+
+# La maqueta de diseño se genera con `node diseno/maqueta/generar.ts`.
+diseno/maqueta/*.html
+diseno/maqueta/lectura.js
+
+# Las páginas de decisión de impeccable: son de la sesión, no del repo.
+.impeccable/questions/
