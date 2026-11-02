@@ -234,3 +234,157 @@ EXIT=0
   `wrangler deploy --dry-run` choca con el punto 0.4 del protocolo. Va a Parkeados.
 
 **Sha:** `186283e`
+
+---
+
+## Harness: el pool de Workers pasa a `@cloudflare/vitest-plugin` · 2026-11-02
+
+No es un ítem del backlog: es el cambio que decidió el usuario sobre el parkeado "ADR-0001 se
+revisa", que sale del backlog con esto. El usuario eligió el sucesor y seguir en Vitest 4.
+
+**Archivos:** `docs/adr/0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md`,
+`docs/adr/0001-typescript-vitest-4-y-gate-en-el-host.md` (sólo el estado), `docs/adr/README.md`,
+`CLAUDE.md` (la regla 1), `package.json`, `package-lock.json`, `tsconfig.worker.json`,
+`vitest.config.ts`, `wrangler.jsonc`, `docs/backlog.md`.
+
+**Gate:** `npm run gate`
+
+**El ADR, primero.** [ADR-0010](adr/0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md)
+reemplaza la parte de ADR-0001 que nombra el paquete del pool, y también la del `tsc` del gate
+(los dos programas de TypeScript que entraron con S1).
+
+**Qué cambió.** Sale `@cloudflare/vitest-pool-workers` 0.23.0 y entra `@cloudflare/vitest-plugin`
+1.4.12; `wrangler` pasa de 4.124.0 a 4.156.1, la versión que fija el plugin. `wrangler` 4.156.1 pide
+`@cloudflare/workers-types ^5.20261101.1`, así que los tipos (5.20261101.1) y la fecha de
+compatibilidad del Worker (2026-11-01) se movieron juntos a la del workerd que trae el plugin
+(1.20261101.1). El código de los tests no cambió: sólo el import de `vitest.config.ts` y los tipos de
+`tsconfig.worker.json`.
+
+**`npm audit`:** de 17 vulnerabilidades (11 moderadas y 6 altas) a 11 moderadas. Las 6 altas
+(`undici`, `zod`, `sharp`) venían del pool viejo. Las 11 moderadas son de `minimatch` por eslint y
+ya estaban desde S0. La entrada de S1 y su reporte dijeron que las 17 eran del pool: era un error.
+
+**El harness nuevo sabe ponerse rojo.** No hay test nuevo, así que el rojo es un bug a propósito
+en `sondear` (`arriba: respuesta.status < 600`: todo cuenta como arriba), revertido con
+`git checkout -- src/worker/sondas.ts` antes del verde. Un primer intento con `arriba: true` lo
+cortó `tsc` (`'respuesta' is declared but its value is never read`) antes de llegar a Vitest, así
+que no sirvió como prueba.
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+ ❯ |worker| tests/worker/sondas.test.ts (3 tests | 2 failed) 214ms
+     × suma un minuto medido a cada componente y uno arriba sólo al que contesta 200, en la fila del día UTC 77ms
+     × las corridas del mismo día UTC suman en su fila, y la medianoche UTC abre una nueva 64ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |worker| tests/worker/sondas.test.ts > el cron de las sondas > suma un minuto medido a cada componente y uno arriba sólo al que contesta 200, en la fila del día UTC
+AssertionError: expected [ { stack: 'museo', …(4) }, …(1) ] to match object [ { stack: 'museo', …(3) }, …(1) ]
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+@@ -5,10 +5,10 @@
+      "minutos_medidos": 1,
+      "stack": "museo",
+    },
+    {
+      "dia": "2026-11-02",
+-     "minutos_arriba": 0,
++     "minutos_arriba": 1,
+      "minutos_medidos": 1,
+      "stack": "neonduel",
+    },
+  ]
+
+ ❯ tests/worker/sondas.test.ts:72:22
+     70|
+     71|     const historia = await leerHistoria();
+     72|     expect(historia).toMatchObject([
+       |                      ^
+     73|       {stack: 'museo', dia: '2026-11-02', minutos_medidos: 1, minutos_…
+     74|       {stack: 'neonduel', dia: '2026-11-02', minutos_medidos: 1, minut…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |worker| tests/worker/sondas.test.ts > el cron de las sondas > las corridas del mismo día UTC suman en su fila, y la medianoche UTC abre una nueva
+AssertionError: expected [ { stack: 'museo', …(4) }, …(3) ] to match object [ { stack: 'museo', …(3) }, …(3) ]
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -11,16 +11,16 @@
+      "minutos_medidos": 1,
+      "stack": "museo",
+    },
+    {
+      "dia": "2026-11-02",
+-     "minutos_arriba": 0,
++     "minutos_arriba": 2,
+      "minutos_medidos": 2,
+      "stack": "neonduel",
+    },
+    {
+      "dia": "2026-11-03",
+-     "minutos_arriba": 0,
++     "minutos_arriba": 1,
+      "minutos_medidos": 1,
+      "stack": "neonduel",
+    },
+  ]
+
+ ❯ tests/worker/sondas.test.ts:102:22
+    100|
+    101|     const historia = await leerHistoria();
+    102|     expect(historia).toMatchObject([
+       |                      ^
+    103|       {stack: 'museo', dia: '2026-11-02', minutos_medidos: 2, minutos_…
+    104|       {stack: 'museo', dia: '2026-11-03', minutos_medidos: 1, minutos_…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 2 passed (4)
+   Start at  10:51:06
+   Duration  885ms (transform 29ms, setup 44ms, import 34ms, tests 216ms, environment 0ms)
+
+EXIT=1
+```
+
+**Verde**, con `sondear` como está en el commit y sin el aviso de deprecado:
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  2 passed (2)
+      Tests  4 passed (4)
+   Start at  10:51:46
+   Duration  868ms (transform 30ms, setup 45ms, import 33ms, tests 215ms, environment 0ms)
+
+EXIT=0
+```
+
+**Sha:** `2c9bed5`
