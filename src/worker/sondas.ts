@@ -11,14 +11,19 @@ interface Sonda {
   latenciaMs: number;
 }
 
-/** Suma una sonda a la fila del día, o la abre si es la primera del día (ADR-0009). */
+/**
+ * Suma una sonda a la fila del día, o la abre si es la primera del día (ADR-0009). Sólo suma si la
+ * corrida es posterior a la última que sumó: una repetida para el mismo minuto no cuenta doble.
+ */
 const SUMAR_MINUTO = `
-  INSERT INTO historia (stack, dia, minutos_medidos, minutos_arriba, ultima_latencia_ms)
-  VALUES (?1, ?2, 1, ?3, ?4)
+  INSERT INTO historia (stack, dia, minutos_medidos, minutos_arriba, ultima_latencia_ms, ultima_sonda_en)
+  VALUES (?1, ?2, 1, ?3, ?4, ?5)
   ON CONFLICT (stack, dia) DO UPDATE SET
     minutos_medidos = minutos_medidos + 1,
     minutos_arriba = minutos_arriba + excluded.minutos_arriba,
-    ultima_latencia_ms = excluded.ultima_latencia_ms`;
+    ultima_latencia_ms = excluded.ultima_latencia_ms,
+    ultima_sonda_en = excluded.ultima_sonda_en
+  WHERE excluded.ultima_sonda_en > historia.ultima_sonda_en`;
 
 /** Lo que espera una sonda antes de darse por vencida: el timeout de `http_2xx` en blackbox. */
 const TIMEOUT_MS = 10_000;
@@ -64,6 +69,8 @@ export async function sondear(db: D1Database, hora: number): Promise<void> {
   const dia = diaUtc(hora);
   const sumar = db.prepare(SUMAR_MINUTO);
   await db.batch(
-    sondas.map(({stack, arriba, latenciaMs}) => sumar.bind(stack, dia, arriba ? 1 : 0, latenciaMs)),
+    sondas.map(({stack, arriba, latenciaMs}) =>
+      sumar.bind(stack, dia, arriba ? 1 : 0, latenciaMs, hora),
+    ),
   );
 }

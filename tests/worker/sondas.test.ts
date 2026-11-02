@@ -157,4 +157,16 @@ describe('el cron de las sondas', () => {
       {stack: 'nonograma', dia: '2026-11-02', minutos_medidos: 1, minutos_arriba: 0},
     ]);
   });
+
+  it('una corrida repetida para el mismo minuto no suma dos veces', async () => {
+    simularUrls(0);
+
+    await correrCron('2026-11-02T13:05:00Z');
+    await correrCron('2026-11-02T13:05:00Z');
+
+    expect(await leerHistoria()).toMatchObject([
+      {stack: 'museo', dia: '2026-11-02', minutos_medidos: 1, minutos_arriba: 1},
+      {stack: 'neonduel', dia: '2026-11-02', minutos_medidos: 1, minutos_arriba: 0},
+    ]);
+  });
 });
