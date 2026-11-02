@@ -746,3 +746,125 @@ GATE_EXIT=0
 ```
 
 **Sha:** `fd21169`
+
+## S2 — La API pública da el estado y los 90 días de cada componente, y la página lo muestra · 2026-11-02
+
+**Archivos:**
+- Worker y esquema: `src/worker/estado.ts`, `src/worker/index.ts`, `src/worker/sondas.ts`,
+  `src/worker/env.d.ts`, `src/estado.ts` y `migrations/0003_resultado_de_la_ultima_sonda.sql`.
+- Página: `src/pagina/` (`textos.ts`, `renderizar.ts`, `interaccion.ts` y `principal.ts`), y
+  `public/` (`index.html`, más `estilos.css` y `fuentes/`, que se mudaron de la maqueta).
+- Tests: `tests/worker/api.test.ts`, `tests/worker/pagina.test.ts`, `tests/worker/sondas.test.ts`
+  y `tests/pagina/renderizar.test.ts`.
+- Configuración: `tsconfig.json`, `tsconfig.pagina.json`, `wrangler.jsonc`, `package.json`,
+  `package-lock.json` (esbuild), `.gitignore` y `.claude/launch.json`.
+- Maqueta: `diseno/README.md`, y en `diseno/maqueta/`: `generar.ts`, `lectura.ts` y `maqueta.css`.
+- Documentación: los ADR 0010 (sólo el estado), 0011 y 0012, `docs/adr/README.md`, `CLAUDE.md`
+  (la regla 1) y `docs/backlog.md` (la nota del gate).
+- En el commit siguiente: `docs/backlog.md` (el tilde, el intocable y dos parkeados) y esta
+  entrada.
+
+**Gate:** `npm run gate`
+
+**Los ADR, primero.** Aparecieron dos decisiones caras de revertir. Las escribí como propuestas
+antes del test, y el usuario las aceptó antes de escribirlo:
+- [ADR-0011](adr/0011-la-api-publica-de-estado.md) fija el formato público de `GET /api/status`.
+  Un componente sale `no_data` si su última sonda tiene más de 5 minutos. Además, **la fila del día
+  guarda si la última sonda dio arriba** (migración 0003): con los contadores solos no se sabe si
+  el último minuto anduvo.
+- [ADR-0012](adr/0012-la-pagina-la-arma-el-navegador.md) decide la página:
+  - son archivos estáticos que el navegador arma con una función pura, testeada en Node;
+  - esbuild empaqueta el código;
+  - el idioma se recuerda en `localStorage`;
+  - el gate chequea un tercer programa de TypeScript, el de la página, con los tipos del DOM. Eso
+    reemplaza la parte de ADR-0010 que decía dos.
+
+**Rojo.** El backlog esperaba un 404 en la ruta de la API. Lo que dio fue que el Worker no tiene
+handler `fetch`, así que ni siquiera hay ruta. Los otros dos rojos fueron los esperados: falta la
+columna `ultima_arriba` y falta el módulo de la página. Los 7 tests de antes siguieron en verde.
+
+El gate corta en `tsc`:
+
+```
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+tests/pagina/renderizar.test.ts(2,34): error TS2307: Cannot find module '../../src/estado.ts' or its corresponding type declarations.
+tests/pagina/renderizar.test.ts(3,26): error TS2307: Cannot find module '../../src/pagina/renderizar.ts' or its corresponding type declarations.
+```
+
+Y `npx vitest run`, para ver el rojo de cada test:
+
+```
+ RUN  v4.1.12 P:/status
+     × se sirve como archivo estático, en inglés, y carga el código que pide la API 27ms
+     × da el estado de ahora y los 90 días de cada componente, en inglés y sin campos internos 26ms
+     × un componente sin medición reciente sale sin datos, no como arriba 5ms
+     × un componente que nunca se midió sale sin datos, con los 90 días en cero 10ms
+     × después de la medianoche UTC, el día nuevo abre en cero y la última sonda sigue siendo la de ayer 5ms
+     × la última sonda guarda si dio arriba 34ms
+ FAIL  |node| tests/pagina/renderizar.test.ts [ tests/pagina/renderizar.test.ts ]
+Error: Cannot find module '../../src/pagina/renderizar.ts' imported from P:/status/tests/pagina/renderizar.test.ts
+ FAIL  |worker| tests/worker/api.test.ts > la API de estado > da el estado de ahora y los 90 días de cada componente, en inglés y sin campos internos
+Error: D1_ERROR: table historia has no column named ultima_arriba: SQLITE_ERROR
+ FAIL  |worker| tests/worker/api.test.ts > la API de estado > un componente que nunca se midió sale sin datos, con los 90 días en cero
+TypeError: Expected default export of P:\status\src\worker\index.ts to define a `fetch()` function
+ FAIL  |worker| tests/worker/pagina.test.ts > la página > se sirve como archivo estático, en inglés, y carga el código que pide la API
+TypeError: Expected default export of P:\status\src\worker\index.ts to define a `fetch()` function
+ FAIL  |worker| tests/worker/sondas.test.ts > el cron de las sondas > la última sonda guarda si dio arriba
+Error: D1_ERROR: no such column: ultima_arriba at offset 14: SQLITE_ERROR
+ Test Files  4 failed | 1 passed (5)
+      Tests  6 failed | 7 passed (13)
+```
+
+**En el camino a verde.**
+- **Los archivos estáticos no se sirven en los tests.** Con `assets` en `wrangler.jsonc`, tanto
+  `exports.default.fetch` como `SELF.fetch` le pegan directo al Worker y saltean el ruteo de
+  assets: los dos daban el 404 del Worker. Con un binding `ASSETS`, `env.ASSETS.fetch('/')` sí da
+  `index.html`. Así que el Worker le pasa a `ASSETS` todo lo que no es la API, y el test entra
+  por el Worker, como cualquier visitante. En producción, `/` lo sirven los archivos estáticos sin
+  pasar por el Worker (ADR-0012).
+- **Dos correcciones a mis tests, antes del verde.** El texto en español es "1 de 2 anda", como en
+  la maqueta, no "andan". Y el helper que saca el texto del HTML metía un espacio por cada
+  etiqueta, también en el link del nombre ("museo ."): ahora las etiquetas en línea no separan.
+- **Un bug que encontró la prueba a mano.** Con `wrangler dev` en local, el D1 local migrado y
+  datos de demostración, "Down" salía en negro: `renderizar` armaba la clase `estado--down` y el
+  CSS de `DESIGN.md` espera `estado--caido`. Sumé la aserción de las clases al test y la vi fallar
+  (`expected '…' to contain '<span class="estado estado--anda">'`). Después mapeé los estados a
+  las clases.
+- **El resto de la prueba a mano** salió bien:
+  - "Down" quedó en bermellón (`rgb(184, 52, 26)`);
+  - el botón ES cambia la página, el título y `lang`, y la elección sobrevive a la recarga;
+  - Inicio y Fin recorren el gráfico, y la lectura sale en tres tramos.
+  Todo fue local: `wrangler d1 migrations apply --local` y `wrangler d1 execute --local`, nada
+  contra la cuenta.
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  5 passed (5)
+      Tests  19 passed (19)
+   Start at  14:01:08
+   Duration  1.13s (transform 96ms, setup 226ms, import 115ms, tests 412ms, environment 0ms)
+
+GATE_EXIT=0
+```
+
+**Lo que no cubre el gate:**
+- El código del navegador no tiene test (ADR-0012).
+- El gate no empaqueta la página: `npm run build:pagina` lo corre Wrangler.
+- Hasta S4 un componente no tiene nombre ni descripción: la página muestra su `id`.
+
+**Sha:** `bd5350d`

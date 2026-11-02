@@ -27,8 +27,11 @@ Un ítem que no dice qué test lo cierra no está listo para el loop.
 
 ## Archivos intocables
 
-Vacío. Si al empezar una iteración `git status --short` muestra cambios que **no**
+Si al empezar una iteración `git status --short` muestra cambios que **no**
 son de ella, se anotan acá y **no** entran en su commit.
+
+- `.gemini/settings.json` (sin versionar): lo escribió `npx impeccable update` el 2026-11-02, con
+  los hooks de impeccable para Gemini. No es de ningún ítem; decide el usuario si se queda.
 
 ## El gate
 
@@ -63,7 +66,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       ([ADR-0001](adr/0001-typescript-vitest-4-y-gate-en-el-host.md)). Ver
       [ADR-0002](adr/0002-corre-en-un-worker-de-cloudflare-en-el-plan-free.md).
 
-- [ ] **S2 — La API pública da el estado y los 90 días de cada componente, y la página lo muestra.** *Depende de S1.*
+- [x] **S2 — La API pública da el estado y los 90 días de cada componente, y la página lo muestra.** *Depende de S1.*
       *Test:* con D1 sembrado, el `GET` de la API de estado contesta 200 con una entrada por
       componente: su estado actual y una por cada uno de los últimos 90 días, en inglés y sin campos
       internos. Un componente sin sonda en los últimos minutos sale sin datos, no como arriba. La
@@ -150,3 +153,9 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
 - **Un abuso de la API o del MCP agota el cupo del día.** Pasados los 100.000 pedidos, la API y el
   MCP contestan error hasta la medianoche UTC. *Falta:* decidir si se cachea en el borde, se pone
   una regla de rate limit (verificar qué da el plan Free), o se acepta.
+- **La página se actualiza sola.** Hoy pide el estado una vez, al cargar: una pestaña abierta se
+  queda con la foto de ese momento, aunque el cron mida cada minuto. *Falta:* decidir cómo se
+  prueba, porque ADR-0012 dejó sin test lo que toca el navegador.
+- **Los tamaños sueltos de `public/estilos.css` pasan a tokens.** El documentador de `DESIGN.md`
+  marcó los del emisor, el código del talón, el eje, los meses y la marca. *Falta:* es CSS sin
+  test; se hace con impeccable, y `DESIGN.md` cambia en el mismo commit (ADR-0008).
