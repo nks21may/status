@@ -27,11 +27,8 @@ Un ítem que no dice qué test lo cierra no está listo para el loop.
 
 ## Archivos intocables
 
-Si al empezar una iteración `git status --short` muestra cambios que **no**
+Vacío. Si al empezar una iteración `git status --short` muestra cambios que **no**
 son de ella, se anotan acá y **no** entran en su commit.
-
-- `.gemini/settings.json` (sin versionar): lo escribió `npx impeccable update` el 2026-11-02, con
-  los hooks de impeccable para Gemini. No es de ningún ítem; decide el usuario si se queda.
 
 ## El gate
 
