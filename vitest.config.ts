@@ -24,7 +24,8 @@ export default defineConfig({
         plugins: [
           cloudflareTest({
             wrangler: {configPath: './wrangler.jsonc'},
-            miniflare: {bindings: {TEST_MIGRATIONS: migraciones}},
+            // El token del emisor de los tests; el de verdad es un secreto del Worker (ADR-0015).
+            miniflare: {bindings: {TEST_MIGRATIONS: migraciones, EMISOR_TOKEN: 'token-de-prueba'}},
           }),
         ],
         test: {

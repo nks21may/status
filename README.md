@@ -12,7 +12,46 @@ despliega [`infra`](../infra). TypeScript en todo el repo.
 
 ## Arranque rápido
 
-Todavía no hay nada que levantar: el primer ítem que lo necesite escribe esta sección.
+El Worker en local, con su D1 local. Nada de esto toca la cuenta de Cloudflare:
+
+```bash
+npx wrangler d1 migrations apply status --local
+```
+
+```bash
+npx wrangler dev
+```
+
+`wrangler dev` empaqueta la página antes de arrancar (`npm run build:pagina`). Para probar el
+envío del emisor, el Worker necesita su token en `.dev.vars`, que no se versiona:
+
+```
+EMISOR_TOKEN=un-token-de-desarrollo
+```
+
+## El emisor
+
+Corre en la VPS y cada minuto le manda al Worker la lista de componentes y su salud de adentro
+([ADR-0003](docs/adr/0003-la-vps-empuja-lo-de-adentro.md),
+[ADR-0015](docs/adr/0015-el-envio-del-emisor.md)). Node 24 lo corre sin compilar:
+
+```bash
+node src/emisor/principal.ts
+```
+
+Lo que recibe por variables de entorno es el contrato con el stack de `infra`
+([ADR-0004](docs/adr/0004-el-emisor-vive-aca-y-lo-despliega-infra.md)): un cambio acá pide un
+commit allá.
+
+| Variable | Qué es |
+|---|---|
+| `PROMETHEUS_URL` | La URL de Prometheus, por ejemplo `http://127.0.0.1:9090`. |
+| `CATALOGO` | La ruta del `catalogo.json` que escribe el deploy, montado de sólo lectura. |
+| `STATUS_URL` | La URL del Worker, por ejemplo `https://status.nicolasdalessandro.dev`. |
+| `STATUS_TOKEN` | El token del envío: el mismo valor que el secreto `EMISOR_TOKEN` del Worker. |
+
+De Prometheus lee `infra_contenedor_sano` y la agrupa por su etiqueta `stack`
+([ADR-0014](docs/adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md)).
 
 ## El gate
 

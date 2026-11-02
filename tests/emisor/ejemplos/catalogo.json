@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "generado": "2026-11-02T13:04:00Z",
+  "stacks": [
+    {
+      "stack": "bot_discord",
+      "apagado": false,
+      "hub": {
+        "nombre": "Audio",
+        "url": "https://audio.nicolasdalessandro.dev/",
+        "desde": "2026-08-09",
+        "descripcion": {
+          "es": "Pasa el audio de una pestaña de Chrome a un canal de voz de Discord.",
+          "en": "Pipes the audio of a Chrome tab into a Discord voice channel."
+        },
+        "vista": "https://audio.nicolasdalessandro.dev/vista.mp4"
+      }
+    },
+    {
+      "stack": "hub",
+      "apagado": false,
+      "hub": {"oculto": "es el hub: no se lista a sí mismo"}
+    },
+    {
+      "stack": "minecraft",
+      "apagado": true,
+      "hub": {"oculto": "whitelist: sólo entran amigos"}
+    },
+    {
+      "stack": "museo",
+      "apagado": false,
+      "hub": {
+        "nombre": "Museo",
+        "url": "https://museo.nicolasdalessandro.dev/",
+        "desde": "2026-09-26",
+        "descripcion": {
+          "es": "Shaders de un tuit corriendo en vivo, que se recorren como canales de tele.",
+          "en": "Tweet-sized shaders running live, browsed like TV channels."
+        }
+      }
+    },
+    {
+      "stack": "neonduel",
+      "apagado": false,
+      "hub": {
+        "nombre": "Neonduel",
+        "url": "https://neonduel.nicolasdalessandro.dev/",
+        "desde": "2026-09-04",
+        "descripcion": {
+          "en": "A 1v1 browser 3D shooter with Counter-Strike movement."
+        }
+      }
+    },
+    {
+      "stack": "nonograma",
+      "apagado": true,
+      "hub": {
+        "nombre": "Nonograma",
+        "url": "https://nonograma.nicolasdalessandro.dev/",
+        "desde": "2026-10-19",
+        "descripcion": {
+          "es": "Nonogramas sin fin, de dibujos de pixel art y grillas aleatorias.",
+          "en": "Endless nonograms, from pixel-art drawings and random grids."
+        }
+      }
+    },
+    {
+      "stack": "portafolio",
+      "apagado": false,
+      "hub": {
+        "nombre": "Portfolio",
+        "url": "http://nicolasdalessandro.dev/",
+        "desde": "2026-09-07",
+        "descripcion": {
+          "es": "Quién soy, qué hice y con qué: la versión seria.",
+          "en": "Who I am, what I've built and with what: the serious version."
+        }
+      }
+    }
+  ]
+}

@@ -22,6 +22,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0012](0012-la-pagina-la-arma-el-navegador.md) | La página es un archivo estático que arma el navegador; el gate chequea tres programas de TypeScript | aceptado |
 | [0013](0013-el-mcp-habla-json-rpc-a-mano-y-sus-tools.md) | El MCP habla JSON-RPC a mano, sin el SDK, con tres tools de sólo lectura | aceptado |
 | [0014](0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md) | La salud de adentro llega con la etiqueta del stack, que suma `infra` | aceptado |
+| [0015](0015-el-envio-del-emisor.md) | El envío del emisor: `POST /api/report` con un token, y la última lista reemplaza a la anterior | aceptado |
 
 ## Cuándo escribir uno
 
