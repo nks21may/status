@@ -103,7 +103,7 @@ Chequea dos programas de TypeScript: el de Node (`tsconfig.json`) y el del Worke
       **Se espera rojo:** `D1_ERROR: No SQL statements detected.`: `sondear` le pasa a `batch` una
       lista vacía. Verificado el 2026-11-02 con un test descartable que no quedó en el árbol.
 
-- [ ] **S6 — Una sonda que no contesta cuenta como minuto abajo y no corta las demás.** *Depende de S1.*
+- [x] **S6 — Una sonda que no contesta cuenta como minuto abajo y no corta las demás.** *Depende de S1.*
       *Test:* con tres componentes, uno que contesta 200, uno cuyo `fetch` rechaza (error de red) y
       uno que no contesta en 10 s, una corrida suma un minuto medido a los tres y uno arriba sólo
       al primero.

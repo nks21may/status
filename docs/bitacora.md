@@ -478,3 +478,100 @@ EXIT=0
 ```
 
 **Sha:** `d82cf74`
+
+---
+
+## S6 — Una sonda que no contesta cuenta como minuto abajo y no corta las demás · 2026-11-02
+
+**Archivos:** `src/worker/sondas.ts`, `tests/worker/sondas.test.ts`. En el commit siguiente,
+`docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`
+
+Sin ADR: el timeout de 10 s es el de `http_2xx` en blackbox, que ya cita ADR-0009. `probar` corta
+el pedido a los 10 s con un `AbortController`, y un error de red o el corte cuentan como minuto
+abajo, con la latencia hasta el error. El corte va con `setTimeout` y no con
+`AbortSignal.timeout`, porque los timers simulados de Vitest no adelantan éste: el test simula sólo
+`setTimeout` y `clearTimeout`, espera a que la sonda de nonograma esté colgada y adelanta el reloj
+10.000 ms.
+
+**Rojo**, el esperado: el rechazo del `fetch` rompe el `Promise.all` de `sondear`, y la corrida no
+deja filas.
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+ ❯ |worker| tests/worker/sondas.test.ts (5 tests | 1 failed) 232ms
+     × una sonda que no contesta cuenta como minuto abajo y no corta las demás 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |worker| tests/worker/sondas.test.ts > el cron de las sondas > una sonda que no contesta cuenta como minuto abajo y no corta las demás
+TypeError: Network connection lost.
+ ❯ tests/worker/sondas.test.ts:140:15
+    138|       }
+    139|       if (url === NEONDUEL) {
+    140|         throw new TypeError('Network connection lost.');
+       |               ^
+    141|       }
+    142|       // Nonograma no contesta: el pedido sólo termina si la sonda lo …
+ ❯ probar src/worker/sondas.ts:26:27
+ ❯ sondear src/worker/sondas.ts:47:48
+ ❯ Object.scheduled src/worker/index.ts:7:5
+ ❯ correrCron tests/worker/sondas.test.ts:35:3
+ ❯ tests/worker/sondas.test.ts:149:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 5 passed (6)
+   Start at  11:32:01
+   Duration  815ms (transform 32ms, setup 42ms, import 41ms, tests 234ms, environment 0ms)
+
+EXIT=1
+```
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Start at  11:32:14
+   Duration  799ms (transform 27ms, setup 41ms, import 31ms, tests 271ms, environment 0ms)
+
+EXIT=0
+```
+
+**El test fija los 10 s.** Con `TIMEOUT_MS = 10_001` en `src/worker/sondas.ts` la sonda colgada no
+se corta al adelantar el reloj, y el test se vence (revertido después, antes del commit):
+
+```
+     × una sonda que no contesta cuenta como minuto abajo y no corta las demás 5015ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+Error: Test timed out in 5000ms.
+      Tests  1 failed | 4 passed (5)
+```
+
+**Sha:** `ac53841`
