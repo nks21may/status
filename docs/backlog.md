@@ -151,7 +151,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
 
 ### Lo que salió de la publicación
 
-- [ ] **S10 — El CI publica el Worker y la imagen del emisor.** *Depende de S4.*
+- [x] **S10 — El CI publica el Worker y la imagen del emisor.** *Depende de S4.*
       *Test:* el workflow `.github/workflows/publicar.yml` corre sólo en `main`, con el gate antes
       de publicar. Aplica las migraciones remotas antes de `wrangler deploy`, con los secretos
       `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`. Publica `ghcr.io/nks21may/status-emisor` con

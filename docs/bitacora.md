@@ -1245,3 +1245,106 @@ GATE_EXIT=0
 ```
 
 **Sha:** `2f5ac23`
+
+## S10 — El CI publica el Worker y la imagen del emisor · 2026-11-02
+
+**Archivos:**
+- La publicación: `.github/workflows/publicar.yml`, `Dockerfile` y `.dockerignore`.
+- Configuración: `wrangler.jsonc` (`workers_dev: false`, y dónde va el `database_id`),
+  `package.json` y `package-lock.json` (`yaml` 2.9.1, para leer el workflow en el test).
+- Test y documentación: `tests/publicacion.test.ts` y `README.md` (la publicación).
+- En el commit siguiente: `docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`, y además `docker build`.
+
+**La decisión, primero.** El usuario decidió cómo se publica, y quedó en
+[ADR-0017](adr/0017-como-se-publica.md), en su propio commit (`d6fcbe2`):
+- **El repo:** público en GitHub.
+- **El CI:** publica el Worker con un token acotado a Workers Scripts y D1, y la imagen en GHCR.
+- **El dominio:** es un Custom Domain que se crea a mano y que el OpenTofu de `infra` sigue en
+  lectura.
+
+**El test lee los archivos que publican.** El CI corre en GitHub y no se puede correr acá, así que
+el test fija que el workflow, el `Dockerfile` y `wrangler.jsonc` digan lo que el ADR decidió:
+- sólo `main`, y el gate antes de publicar;
+- las migraciones remotas antes de `wrangler deploy`, y los secretos de Cloudflare sólo en ese
+  trabajo;
+- un runner arm, con `:latest` y `:<sha>`;
+- la imagen final sin `node_modules` y sin root;
+- `workers_dev: false`.
+
+**Rojo**, el esperado: el workflow no existe. Los 45 tests de antes siguieron en verde.
+
+```
+ FAIL  |node| tests/publicacion.test.ts [ tests/publicacion.test.ts ]
+Error: ENOENT: no such file or directory, open 'P:\status\.github\workflows\publicar.yml'
+ Test Files  1 failed | 8 passed (9)
+      Tests  45 passed (45)
+GATE_EXIT=1
+```
+
+**El `docker build` encontró lo que el test no veía.** Con el workflow y el `Dockerfile` escritos,
+el gate dio verde, pero el primer `docker build` falló en el `npm run gate` de adentro.
+- **La causa:** workerd no arranca sin certificados de CA, y `node:24-bookworm-slim` no los trae.
+  Los tests de Node pasaron y los del Worker no corrieron:
+
+```
+#13 4.445 service internet: TLS configuration: unexpected error: No CA certificates were loaded from the system
+#13 4.761 Caused by: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration.
+ERROR: failed to build: failed to solve: process "/bin/sh -c npm run gate" did not complete successfully: exit code: 1
+```
+
+- **La aserción, primero.** Sumé al test que la etapa del gate tiene que instalar
+  `ca-certificates`, y lo vi fallar
+  (`expected 'node:24-bookworm-slim AS gate\nWORKDI…' to match /apt-get install[^\n]*\bca-certificate…/`).
+- **El arreglo.** Después lo agregué al `Dockerfile`.
+- **Una trampa en la verificación.** El primer build corrió en segundo plano dentro de un comando
+  que terminaba con un `echo`. La notificación dijo exit 0, pero el que salió bien fue el `echo`.
+  El código real de `docker build` estaba anotado en la salida: 1.
+
+**La imagen, construida** (Docker 29.8.2, en amd64; el CI construye en arm con el mismo
+`Dockerfile`):
+
+```
+#14 6.415  Test Files  9 passed (9)
+DOCKER_BUILD_EXIT=0
+status-emisor:local 244MB
+--- sin variables:
+Falta la variable de entorno PROMETHEUS_URL.
+exit=1
+--- usuario y archivos:
+node
+package.json
+src
+sin node_modules
+v24.22.2
+```
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  9 passed (9)
+      Tests  50 passed (50)
+   Start at  17:15:00
+   Duration  1.77s (transform 532ms, setup 519ms, import 1.16s, tests 1.15s, environment 1ms)
+
+GATE_EXIT=0
+```
+
+**Lo que no se probó:**
+- El workflow no corrió nunca, porque el repo todavía no está en GitHub.
+- El deploy necesita los pasos de una vez de ADR-0017.
+
+**Sha:** `a552372`
