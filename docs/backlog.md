@@ -130,7 +130,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
 
 ### Lo que salió de S4
 
-- [ ] **S8 — La API, la página y el MCP muestran el nombre y la descripción de la ficha.** *Depende de S4.*
+- [x] **S8 — La API, la página y el MCP muestran el nombre y la descripción de la ficha.** *Depende de S4.*
       *Test:* con un envío guardado, cada componente de `GET /api/status` trae `name` y
       `description` (con `en` y `es`, o el que tenga la ficha), y `get_component` del MCP también.
       La página muestra el nombre en lugar del `id`, y la descripción en el idioma elegido, o en el

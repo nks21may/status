@@ -1088,3 +1088,72 @@ GATE_EXIT=0
 - La API y la página todavía no muestran lo que manda el emisor: son S8 y S9.
 
 **Sha:** `500da8a`
+
+## S8 — La API, la página y el MCP muestran el nombre y la descripción de la ficha · 2026-11-02
+
+**Archivos:**
+- Código: `src/estado.ts`, `src/worker/estado.ts`, `src/worker/mcp.ts` y `src/pagina/renderizar.ts`.
+- Tests: `tests/worker/api.test.ts`, `tests/worker/mcp.test.ts`, `tests/pagina/renderizar.test.ts`
+  y `tests/worker/sembrar.ts`, que ahora también siembra la ficha.
+- En el commit siguiente: `docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`
+
+**Sin ADR.** [ADR-0011](adr/0011-la-api-publica-de-estado.md) ya decidía que lo que trae S4 entra
+como campos nuevos. La forma quedó en el tipo público (`src/estado.ts`):
+- `name` es un texto, o `null` hasta que el emisor manda la ficha;
+- `description` trae siempre `en` y `es`, con `null` en el idioma que la ficha no trae.
+
+**Dos tests de antes cambiaron, porque cambió el contrato que fijaban:**
+- la lista exacta de campos de cada componente de la API suma los dos nuevos;
+- el resultado exacto de `get_component` suma la ficha.
+
+**Rojo**, el esperado: la respuesta de la API no trae `name`. Tampoco lo traía `get_component`, y
+la página mostraba el `id`. Los 38 tests restantes siguieron en verde.
+
+```
+     × con la ficha, muestra el nombre y la descripción en el idioma elegido, o en el otro si trae uno solo 6ms
+     × da el estado de ahora y los 90 días de cada componente, en inglés y sin campos internos 26ms
+     × cada componente trae el nombre y la descripción de su ficha, y sin ficha todavía, nulos 16ms
+     × el estado de un componente es el de la API, con su ficha y sin la lista de días 27ms
+AssertionError: expected [ 'days', 'id', 'last_check', …(3) ] to deeply equal [ 'days', 'description', 'id', …(5) ]
+AssertionError: expected [ { id: 'bot_discord', …(2) }, …(2) ] to deeply equal [ { id: 'bot_discord', …(2) }, …(2) ]
+AssertionError: expected { id: 'neonduel', …(4) } to deeply equal { id: 'neonduel', …(6) }
+AssertionError: expected 'status.nicolasdalessandro.dev Estado …' to contain 'Neonduel está caído.'
+ Test Files  3 failed | 5 passed (8)
+      Tests  4 failed | 38 passed (42)
+```
+
+El gate cortó antes, en `tsc`, porque el tipo público todavía no tenía `name`:
+
+```
+tests/pagina/renderizar.test.ts(23,9): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'ComponentePublico'.
+```
+
+**A mano, en local.** Con `wrangler dev` y las fichas que dejó en el D1 local la prueba de S4, la
+página muestra "Audio", "Museo" y "Neonduel", con la descripción de la ficha.
+
+**Verde:**
+
+```
+
+> status@0.0.0 gate
+> tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && tsc --noEmit -p tsconfig.pagina.json && npm run lint && vitest run
+
+
+> status@0.0.0 lint
+> eslint . --max-warnings=0
+
+
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  8 passed (8)
+      Tests  42 passed (42)
+   Start at  15:30:38
+   Duration  1.40s (transform 220ms, setup 481ms, import 278ms, tests 833ms, environment 0ms)
+
+GATE_EXIT=0
+```
+
+**Sha:** `982c791`
