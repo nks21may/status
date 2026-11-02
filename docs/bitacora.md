@@ -69,4 +69,4 @@ EXIT=0
 **Nota:** S0 lo dejó armado la sesión de preparación, no una iteración del
 loop. La primera iteración real del loop es **S1**.
 
-**Sha:** pendiente
+**Sha:** `6f6a1bd`

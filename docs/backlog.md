@@ -40,7 +40,7 @@ npm run gate
 
 ## Fase 0 — Fundaciones
 
-- [ ] **S0 — Harness y estructura.** El gate corre, tiene el lint adentro,
+- [x] **S0 — Harness y estructura.** El gate corre, tiene el lint adentro,
       sabe ponerse rojo y da verde. Lo arma la sesión de preparación, no el loop.
 
 ---
