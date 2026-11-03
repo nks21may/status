@@ -55,7 +55,7 @@ export async function enviarUnaVez(configuracion: Configuracion, dependencias: D
 
   let armado: ReturnType<typeof armarEnvio>;
   try {
-    armado = armarEnvio(catalogo, prometheus);
+    armado = armarEnvio(catalogo, prometheus, configuracion.statusUrl);
   } catch (error) {
     registrar(`${motivo(error)} No se manda nada.`);
     return false;

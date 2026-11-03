@@ -65,6 +65,10 @@ commit allá.
 De Prometheus lee `infra_contenedor_sano` y la agrupa por su etiqueta `stack`
 ([ADR-0014](docs/adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md)).
 
+Del catálogo manda las fichas visibles, salvo la que tiene el mismo host que `STATUS_URL`: el
+status aparece en el hub, pero no se lista a sí mismo
+([ADR-0018](docs/adr/0018-el-status-no-se-lista-a-si-mismo.md)).
+
 Para el healthcheck de `infra` sirve `GET http://127.0.0.1:8460/healthz`, sólo en IPv4 y en
 loopback. Contesta 200 si el último envío lo aceptó el Worker hace 3 minutos o menos, y 503 si no:
 antes del primer envío, si el último falló, o si el ciclo se trabó. En la imagen está el `wget` de

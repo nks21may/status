@@ -58,13 +58,24 @@ function saludPorStack(prometheus: unknown): Map<string, boolean> | null {
   return salud;
 }
 
+/** El host de una URL, en minúsculas, o `null` si no es una URL. */
+function hostDe(url: unknown): string | null {
+  return typeof url === 'string' ? (URL.parse(url)?.host ?? null) : null;
+}
+
 /**
- * El envío con las fichas visibles del catálogo: ni `oculto` ni de un stack `apagado` (ADR-0007).
- * Una ficha que no cumple el contrato se descarta con su motivo, sin tirar el resto.
+ * El envío con las fichas visibles del catálogo: ni `oculto` ni de un stack `apagado` (ADR-0007), ni
+ * la del propio status, la que tiene el host de `statusUrl` (ADR-0018). Una ficha que no cumple el
+ * contrato se descarta con su motivo, sin tirar el resto.
  */
-export function armarEnvio(textoCatalogo: string, prometheus: unknown): {envio: Envio; descartes: string[]} {
+export function armarEnvio(
+  textoCatalogo: string,
+  prometheus: unknown,
+  statusUrl: string,
+): {envio: Envio; descartes: string[]} {
   const entradas = leerCatalogo(textoCatalogo);
   const salud = saludPorStack(prometheus);
+  const hostPropio = hostDe(statusUrl);
   const componentes: ComponenteEnviado[] = [];
   const descartes: string[] = [];
 
@@ -75,6 +86,9 @@ export function armarEnvio(textoCatalogo: string, prometheus: unknown): {envio: 
     }
     const {stack, apagado, hub} = entrada;
     if ('oculto' in hub || apagado === true) {
+      continue;
+    }
+    if (hostPropio !== null && hostDe(hub.url) === hostPropio) {
       continue;
     }
     const componente = validarComponente({

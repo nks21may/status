@@ -14,7 +14,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0004](0004-el-emisor-vive-aca-y-lo-despliega-infra.md) | El emisor vive en este repo, se publica como imagen en GHCR y lo despliega `infra` | aceptado |
 | [0005](0005-ingles-por-defecto-y-espanol.md) | Inglés por defecto y español; el MCP, en inglés | aceptado |
 | [0006](0006-el-mcp-es-remoto-publico-y-de-solo-lectura.md) | El MCP es remoto, público, sin login y de sólo lectura | aceptado |
-| [0007](0007-los-componentes-salen-del-catalogo-del-hub.md) | Los componentes salen del catálogo del hub, y los manda el emisor | aceptado; el paso de contenedor a stack, en [0014](0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md) |
+| [0007](0007-los-componentes-salen-del-catalogo-del-hub.md) | Los componentes salen del catálogo del hub, y los manda el emisor | aceptado; el paso de contenedor a stack, en [0014](0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md), y la ficha del propio status, en [0018](0018-el-status-no-se-lista-a-si-mismo.md) |
 | [0008](0008-la-pagina-se-disena-con-impeccable.md) | La página se diseña con la skill `impeccable`, antes de S2 | aceptado |
 | [0009](0009-la-historia-es-una-fila-por-componente-y-por-dia-utc.md) | La historia en D1 es una fila por componente y por día UTC; un minuto arriba es un 2xx | aceptado |
 | [0010](0010-los-tests-del-worker-usan-vitest-plugin-con-vitest-4.md) | Los tests del Worker usan `@cloudflare/vitest-plugin` con Vitest 4; el gate chequea dos programas de TypeScript | aceptado; en parte reemplazado por [0012](0012-la-pagina-la-arma-el-navegador.md) |
@@ -25,6 +25,7 @@ Plantilla: [0000-plantilla.md](0000-plantilla.md).
 | [0015](0015-el-envio-del-emisor.md) | El envío del emisor: `POST /api/report` con un token, y la última lista reemplaza a la anterior | aceptado |
 | [0016](0016-el-estado-con-fallas-y-el-corte-del-emisor.md) | Un servicio con la URL arriba y algo de adentro caído está "con fallas"; el emisor se corta a los 5 minutos | aceptado |
 | [0017](0017-como-se-publica.md) | Cómo se publica: el repo público en GitHub, el CI publica el Worker y la imagen, y el dominio se crea a mano | aceptado |
+| [0018](0018-el-status-no-se-lista-a-si-mismo.md) | El status no se lista a sí mismo: el emisor deja afuera la ficha con el host de `STATUS_URL` | aceptado |
 
 ## Cuándo escribir uno
 

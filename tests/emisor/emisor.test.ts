@@ -32,9 +32,33 @@ const NEONDUEL = {
   descripcion: {en: 'A 1v1 browser 3D shooter with Counter-Strike movement.'},
 };
 
+/** La dirección del Worker, como la recibe el emisor en la VPS. */
+const STATUS_URL = 'https://status.nicolasdalessandro.dev';
+
+/** Una entrada visible del catálogo, con la ficha que la sesión de `infra` le suma al status (su I87). */
+function entrada(stack: string, url: unknown) {
+  return {
+    stack,
+    apagado: false,
+    hub: {
+      nombre: stack,
+      url,
+      desde: '2026-11-02',
+      descripcion: {en: `The ${stack} entry.`},
+    },
+  };
+}
+
+/** El catálogo de ejemplo con más entradas al final. */
+function conEntradas(...entradas: unknown[]): string {
+  const catalogo = JSON.parse(CATALOGO) as {stacks: unknown[]};
+  catalogo.stacks.push(...entradas);
+  return JSON.stringify(catalogo);
+}
+
 describe('el emisor arma el envío', () => {
   it('con las fichas visibles del catálogo y la salud de cada stack, sano si todos sus contenedores lo están', () => {
-    const {envio} = armarEnvio(CATALOGO, PROMETHEUS);
+    const {envio} = armarEnvio(CATALOGO, PROMETHEUS, STATUS_URL);
 
     expect(envio).toEqual<Envio>({
       componentes: [
@@ -46,7 +70,7 @@ describe('el emisor arma el envío', () => {
   });
 
   it('descarta la ficha que no cumple el contrato, con su motivo, sin tirar el resto', () => {
-    const {envio, descartes} = armarEnvio(CATALOGO, PROMETHEUS);
+    const {envio, descartes} = armarEnvio(CATALOGO, PROMETHEUS, STATUS_URL);
 
     expect(envio.componentes.map((componente) => componente.stack)).not.toContain('portafolio');
     expect(descartes).toHaveLength(1);
@@ -54,16 +78,47 @@ describe('el emisor arma el envío', () => {
     expect(descartes[0]).toContain('url');
   });
 
+  it('deja afuera la ficha del propio status, la del host de STATUS_URL, sin anotarla entre los descartes', () => {
+    const catalogo = conEntradas(
+      entrada('status', 'https://status.nicolasdalessandro.dev/'),
+      entrada('raiz', 'https://nicolasdalessandro.dev/'),
+    );
+
+    for (const statusUrl of [STATUS_URL, 'https://STATUS.nicolasdalessandro.dev/']) {
+      const {envio, descartes} = armarEnvio(catalogo, PROMETHEUS, statusUrl);
+
+      expect(envio.componentes.map((componente) => componente.stack), statusUrl).toEqual([
+        'bot_discord',
+        'museo',
+        'neonduel',
+        'raiz',
+      ]);
+      expect(descartes, statusUrl).toHaveLength(1);
+      expect(descartes[0], statusUrl).toContain('portafolio');
+    }
+  });
+
+  it('una ficha cuya url no es una URL no se compara con STATUS_URL: la descarta la validación de siempre', () => {
+    const catalogo = conEntradas(entrada('sin_esquema', 'status.nicolasdalessandro.dev'), entrada('sin_url', 42));
+
+    const {envio, descartes} = armarEnvio(catalogo, PROMETHEUS, STATUS_URL);
+
+    expect(envio.componentes.map((componente) => componente.stack)).toEqual(['bot_discord', 'museo', 'neonduel']);
+    expect(descartes).toHaveLength(3);
+    expect(descartes.join('\n')).toContain('sin_esquema: la url');
+    expect(descartes.join('\n')).toContain('sin_url: la url');
+  });
+
   it('sin respuesta de Prometheus, manda la salud de todos sin datos', () => {
-    const {envio} = armarEnvio(CATALOGO, null);
+    const {envio} = armarEnvio(CATALOGO, null, STATUS_URL);
 
     expect(envio.componentes.map((componente) => componente.sano)).toEqual([null, null, null]);
   });
 
   it('un catálogo que no se puede leer no arma ningún envío', () => {
-    expect(() => armarEnvio('no es JSON', PROMETHEUS)).toThrow(/catálogo/);
-    expect(() => armarEnvio(JSON.stringify({version: 2, stacks: []}), PROMETHEUS)).toThrow(/version/);
-    expect(() => armarEnvio(JSON.stringify({version: 1}), PROMETHEUS)).toThrow(/stacks/);
+    expect(() => armarEnvio('no es JSON', PROMETHEUS, STATUS_URL)).toThrow(/catálogo/);
+    expect(() => armarEnvio(JSON.stringify({version: 2, stacks: []}), PROMETHEUS, STATUS_URL)).toThrow(/version/);
+    expect(() => armarEnvio(JSON.stringify({version: 1}), PROMETHEUS, STATUS_URL)).toThrow(/stacks/);
   });
 });
 
@@ -107,8 +162,20 @@ describe('el emisor manda el envío', () => {
     expect(envio?.method).toBe('POST');
     expect(new Headers(envio?.headers).get('authorization')).toBe('Bearer secreto');
     expect(new Headers(envio?.headers).get('content-type')).toBe('application/json');
-    expect(JSON.parse(String(envio?.body))).toEqual(armarEnvio(CATALOGO, PROMETHEUS).envio);
+    expect(JSON.parse(String(envio?.body))).toEqual(armarEnvio(CATALOGO, PROMETHEUS, CONFIGURACION.statusUrl).envio);
     expect(simulado.lineas.join('\n')).toContain('portafolio');
+  });
+
+  it('no le manda al Worker la ficha del propio status, la del host de su STATUS_URL', async () => {
+    const simulado = simular(Response.json(PROMETHEUS));
+    const catalogo = conEntradas(entrada('status', 'https://status.example/'));
+
+    const enviado = await enviarUnaVez(CONFIGURACION, {...simulado, leerArchivo: async () => catalogo});
+
+    expect(enviado).toBe(true);
+    const cuerpo = JSON.parse(String(simulado.pedidos[1]?.init?.body)) as Envio;
+    expect(cuerpo.componentes.map((componente) => componente.stack)).toEqual(['bot_discord', 'museo', 'neonduel']);
+    expect(simulado.lineas.join('\n')).not.toContain('status');
   });
 
   it('si Prometheus no contesta, manda igual con la salud sin datos', async () => {
@@ -117,7 +184,9 @@ describe('el emisor manda el envío', () => {
     const enviado = await enviarUnaVez(CONFIGURACION, {...simulado, leerArchivo: async () => CATALOGO});
 
     expect(enviado).toBe(true);
-    expect(JSON.parse(String(simulado.pedidos[1]?.init?.body))).toEqual(armarEnvio(CATALOGO, null).envio);
+    expect(JSON.parse(String(simulado.pedidos[1]?.init?.body))).toEqual(
+      armarEnvio(CATALOGO, null, CONFIGURACION.statusUrl).envio,
+    );
     expect(simulado.lineas.join('\n')).toContain('Prometheus');
   });
 

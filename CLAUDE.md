@@ -45,9 +45,11 @@ aunque los tests pasen.
    [ADR-0013](docs/adr/0013-el-mcp-habla-json-rpc-a-mano-y-sus-tools.md)
 7. **Los componentes salen del catálogo del hub**: un componente es una ficha visible, y la lista
    la manda el emisor. Ningún componente se escribe a mano en este repo, y la salud de adentro se
-   agrupa por la etiqueta `stack` que `infra` le suma a `infra_contenedor_sano`.
-   [ADR-0007](docs/adr/0007-los-componentes-salen-del-catalogo-del-hub.md) y
-   [ADR-0014](docs/adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md)
+   agrupa por la etiqueta `stack` que `infra` le suma a `infra_contenedor_sano`. La ficha con el
+   host de `STATUS_URL` queda afuera: el status no se lista a sí mismo.
+   [ADR-0007](docs/adr/0007-los-componentes-salen-del-catalogo-del-hub.md),
+   [ADR-0014](docs/adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md) y
+   [ADR-0018](docs/adr/0018-el-status-no-se-lista-a-si-mismo.md)
 8. **El diseño de la página sale de `PRODUCT.md` y `DESIGN.md`**, escritos con `impeccable` antes
    de S2. Un color, una tipografía o un espaciado que no sale de ahí es un hallazgo de review.
    [ADR-0008](docs/adr/0008-la-pagina-se-disena-con-impeccable.md)
