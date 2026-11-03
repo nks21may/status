@@ -192,6 +192,24 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       que va con un ADR nuevo antes del test. La propuesta es comparar el host de la URL, sin
       distinguir mayúsculas, y no la URL entera ni el nombre del stack.
 
+### Lo que pidió el hub
+
+- [ ] **S13 — El Worker sirve el loop de vista previa del hub en `/vista.mp4`, y contesta `Range`.** *Depende de S2.*
+      *Test:* `public/vista.mp4` cumple el contrato del ADR-0010 del hub, leído de sus cajas: una
+      sola pista, de video H.264, de 640×480, de hasta 8 s, y el archivo pesa hasta 1,5 MB.
+      `wrangler.jsonc` manda `/vista.mp4`, y nada más, al Worker antes que a los archivos
+      estáticos. `GET /vista.mp4` contesta 200 con el video entero, como `video/mp4`, con
+      `Accept-Ranges: bytes`, cacheable y sin `Cross-Origin-Resource-Policy`. Con `Range` contesta
+      206 con el tramo (cerrado, abierto, de sufijo o recortado al final), 416 si el tramo empieza
+      después del final, y 200 con todo si no lo entiende. `HEAD` no lleva cuerpo.
+      **Se espera rojo:** `public/vista.mp4` no existe, y el pedido contesta el 404 de los archivos
+      estáticos.
+      El pedido es de la sesión del hub, el 2026-11-03: el I87 de `infra` le sumó al stack `status`
+      una ficha visible, sin `vista`, y el hub la muestra con su relleno. Los archivos estáticos no
+      contestan `Range`: el 2026-11-03 dieron 200 a `Range: bytes=0-99`, en producción y en el
+      workerd local. Safari no reproduce un video sin 206, así que va con un ADR nuevo antes del
+      test.
+
 ---
 
 ## Parkeados
