@@ -177,7 +177,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       `wget` de busybox de la imagen. El puerto queda en el README de acá, e `infra` lo registra a
       nombre del stack `status`.
 
-- [ ] **S12 — El emisor deja afuera la ficha del propio status.** *Depende de S4.*
+- [x] **S12 — El emisor deja afuera la ficha del propio status.** *Depende de S4.*
       *Test:* con un catálogo que trae, además de las otras, una ficha visible con el mismo host
       que `STATUS_URL` (`https://status.nicolasdalessandro.dev/` contra
       `https://status.nicolasdalessandro.dev`), el envío no la lleva ni la anota entre los

@@ -1428,3 +1428,91 @@ GATE_EXIT=0
 ```
 
 **Sha:** `fe1ef47`
+
+## S12 — El emisor deja afuera la ficha del propio status · 2026-11-02
+
+**Archivos:**
+- Decisión: `docs/adr/0018-el-status-no-se-lista-a-si-mismo.md`, el estado de ADR-0007, el índice de
+  ADR y la regla 7 de `CLAUDE.md`.
+- Código: `src/emisor/armar-envio.ts` y `src/emisor/enviar.ts`.
+- Test y documentación: `tests/emisor/emisor.test.ts` y `README.md`.
+- En el commit siguiente: `docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`.
+
+**El pedido.** Vino de la sesión de `infra`, y el usuario aprobó pasarlo y tomarlo. Su I87 le suma
+un `x-hub` visible al stack `status` para que el status aparezca en el hub. Sin este cambio, el
+emisor lo mandaría como componente: la página se listaría a sí misma y el cron se sondearía a sí
+mismo. I87 espera esta imagen publicada.
+
+**ADR-0018**, aceptado por el usuario: el emisor deja afuera, en silencio, la ficha cuya `url` tiene
+el mismo host que `STATUS_URL`. Se compara el host y no la URL entera ni el nombre del stack.
+
+**Rojo**, el esperado. En el gate, `tsc` corta porque `armarEnvio` todavía no recibe `STATUS_URL`:
+
+```
+tests/emisor/emisor.test.ts(61,54): error TS2554: Expected 2 arguments, but got 3.
+tests/emisor/emisor.test.ts(73,65): error TS2554: Expected 2 arguments, but got 3.
+tests/emisor/emisor.test.ts(88,67): error TS2554: Expected 2 arguments, but got 3.
+...
+```
+
+En `npx vitest run tests/emisor/emisor.test.ts`, que no chequea tipos, el envío lleva la ficha:
+
+```
+ FAIL  |node| tests/emisor/emisor.test.ts > el emisor arma el envío > deja afuera la ficha del propio status, la del host de STATUS_URL, sin anotarla entre los descartes
+AssertionError: https://status.nicolasdalessandro.dev: expected [ 'bot_discord', 'museo', …(3) ] to deeply equal [ 'bot_discord', 'museo', …(2) ]
+
+- Expected
++ Received
+
+  [
+    "bot_discord",
+    "museo",
+    "neonduel",
++   "status",
+    "raiz",
+  ]
+
+ FAIL  |node| tests/emisor/emisor.test.ts > el emisor manda el envío > no le manda al Worker la ficha del propio status, la del host de su STATUS_URL
+AssertionError: expected [ 'bot_discord', 'museo', …(2) ] to deeply equal [ 'bot_discord', 'museo', 'neonduel' ]
+
+- Expected
++ Received
+
+  [
+    "bot_discord",
+    "museo",
+    "neonduel",
++   "status",
+  ]
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 8 passed (10)
+```
+
+**El test que no falló antes del código.** "Una ficha cuya url no es una URL no se compara" pasa sin
+el cambio, porque antes no había comparación. Cuida que la comparación nueva no tire el envío
+entero. Para ver que sirve, cambié a mano `hostDe` por `new URL(String(url)).host`, corrí el
+archivo y volví atrás:
+
+```
+     × una ficha cuya url no es una URL no se compara con STATUS_URL: la descarta la validación de siempre 2ms
+TypeError: Invalid URL
+      Tests  1 failed | 9 passed (10)
+```
+
+**Verde:**
+
+```
+GATE_EXIT=0
+ RUN  v4.1.12 P:/status
+
+
+ Test Files  10 passed (10)
+      Tests  59 passed (59)
+   Start at  22:21:32
+   Duration  1.56s (transform 409ms, setup 481ms, import 798ms, tests 1.20s, environment 1ms)
+```
+
+**Sha:** `ddbc34f`
