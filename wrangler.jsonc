@@ -10,7 +10,10 @@
   // public/, como /api/status, va al Worker, que le devuelve a ASSETS lo que no es suyo.
   "assets": {
     "directory": "./public",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // El loop del hub, y nada más, pasa primero por el Worker, que contesta Range: los archivos
+    // estáticos no lo hacen, y Safari no reproduce un video sin un 206 (ADR-0019).
+    "run_worker_first": ["/vista.mp4"]
   },
   // El código de la página se empaqueta antes de `wrangler dev` y de `wrangler deploy` (ADR-0012).
   "build": {

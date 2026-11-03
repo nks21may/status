@@ -20,7 +20,7 @@
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src", "tests", "vitest.config.ts"],
+  "include": ["src", "tests", "herramientas", "vitest.config.ts"],
   // El Worker y sus tests son otro programa, con los globales de workerd y no los de Node:
   // tsconfig.worker.json. La página es otro, con los del DOM: tsconfig.pagina.json (ADR-0012).
   "exclude": ["src/worker", "tests/worker", "src/pagina"]

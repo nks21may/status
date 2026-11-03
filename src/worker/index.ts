@@ -2,15 +2,23 @@ import {recibirEnvio} from './envio.ts';
 import {leerEstado} from './estado.ts';
 import {responderMcp} from './mcp.ts';
 import {sondear} from './sondas.ts';
+import {servirVista} from './vista.ts';
 
 /**
  * El Worker del status. La página la sirven los archivos estáticos de `public/` sin pasar por acá
- * (ADR-0012); al Worker llega sólo lo que no es un archivo.
+ * (ADR-0012); al Worker llega lo que no es un archivo, y `/vista.mp4`, que `wrangler.jsonc` le manda
+ * primero (ADR-0019).
  */
 const worker: ExportedHandler<Cloudflare.Env> = {
-  /** La API pública de estado (ADR-0011), el MCP (ADR-0013) y el envío del emisor (ADR-0015). */
+  /**
+   * La API pública de estado (ADR-0011), el MCP (ADR-0013), el envío del emisor (ADR-0015) y el loop
+   * de vista previa del hub (ADR-0019).
+   */
   async fetch(pedido, env) {
     const {pathname} = new URL(pedido.url);
+    if (pathname === '/vista.mp4') {
+      return servirVista(pedido, env.ASSETS);
+    }
     if (pathname === '/api/status') {
       return Response.json(await leerEstado(env.DB, Date.now()));
     }

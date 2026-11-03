@@ -78,6 +78,31 @@ busybox:
 wget --no-verbose --tries=1 --spider http://127.0.0.1:8460/healthz
 ```
 
+## La vista previa del hub
+
+El hub (<https://hub.nicolasdalessandro.dev>) muestra el recuadro del status con
+[public/vista.mp4](public/vista.mp4), que pide a <https://status.nicolasdalessandro.dev/vista.mp4>
+([ADR-0019](docs/adr/0019-el-loop-del-hub-lo-sirve-el-worker-con-range.md)). Es un loop de 7,6 s:
+quieto en el estado general, el recorrido por los servicios hasta el talón y un fundido a blanco que
+vuelve al primer cuadro, así el loop no salta.
+
+El formato es un contrato con el hub (su ADR-0010): MP4 H.264 **sin pista de audio**, 640×480, hasta
+8 s y hasta 1,5 MB. El gate lo comprueba leyendo las cajas del archivo. Para regrabarlo hacen falta
+Google Chrome y `ffmpeg` y `ffprobe` en el PATH:
+
+```bash
+node herramientas/grabar-vista.ts
+```
+
+Graba la página publicada, con sus datos de verdad, a 1280×960 y en el tema claro, y ffmpeg la baja a
+640×480: prueba CRF de mejor a peor calidad y se queda con el primero que entra en 1,5 MB. Para grabar
+el Worker local se le pasa su URL, por ejemplo `http://127.0.0.1:8787/`. Hay que regrabarlo si cambia
+el aspecto de la página.
+
+`/vista.mp4` pasa primero por el Worker (`run_worker_first` en `wrangler.jsonc`), que contesta
+`Range` con 206: los archivos estáticos no lo hacen, y Safari no reproduce un video sin eso. Cada
+pedido gasta uno del cupo del Worker, y el navegador lo guarda una hora.
+
 ## El gate
 
 ```bash
