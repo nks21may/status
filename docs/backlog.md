@@ -177,6 +177,21 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
       `wget` de busybox de la imagen. El puerto queda en el README de acá, e `infra` lo registra a
       nombre del stack `status`.
 
+- [ ] **S12 — El emisor deja afuera la ficha del propio status.** *Depende de S4.*
+      *Test:* con un catálogo que trae, además de las otras, una ficha visible con el mismo host
+      que `STATUS_URL` (`https://status.nicolasdalessandro.dev/` contra
+      `https://status.nicolasdalessandro.dev`), el envío no la lleva ni la anota entre los
+      descartes, y las demás fichas van igual. Una ficha de otro host va aunque comparta el dominio
+      (`https://nicolasdalessandro.dev/`).
+      **Se espera rojo:** el envío lleva la ficha del status.
+      El pedido es de la sesión de `infra`, el 2026-11-02, y el usuario aprobó pasarlo. Su I87 le
+      suma un `x-hub` a `stacks/status/compose.yml` para que el status aparezca en el hub. Sin este
+      cambio, el status se listaría a sí mismo y el cron se sondearía a sí mismo. I87 espera esta
+      imagen publicada.
+      Amplía el filtro de [ADR-0007](adr/0007-los-componentes-salen-del-catalogo-del-hub.md), así
+      que va con un ADR nuevo antes del test. La propuesta es comparar el host de la URL, sin
+      distinguir mayúsculas, y no la URL entera ni el nombre del stack.
+
 ---
 
 ## Parkeados
@@ -189,21 +204,18 @@ dato. Van **sin checkbox** para que el loop no las tome ni las cuente.
   la explicación de qué pasó va por commit en este repo. Las alertas internas (`DiscoCasiLleno`,
   `DeployFallando`) no salen. *Falta:* que el usuario decida si entran y en qué fase. El webhook es
   un cambio en `infra`.
-- **La visibilidad de la imagen en GHCR.** De los pasos de una vez de
-  [ADR-0017](adr/0017-como-se-publica.md) sólo queda éste. El repo, la base D1, el token, los
-  secretos y el Custom Domain se hicieron el 2026-11-02. *Falta:* que el usuario la deje igual que
-  la de `hub`, para que la VPS pueda bajarla.
-- **El lado de `infra`.** Cinco cosas:
-  - el stack del emisor, en la red del host, para llegar a Prometheus por loopback;
-  - el token, cifrado con sops;
-  - el catálogo, montado de sólo lectura;
-  - la etiqueta `stack` en `infra_contenedor_sano`, tomada de `com.docker.compose.project`
+- **El lado de `infra`.** El emisor ya corre en la VPS, con su I85: el stack, el token cifrado y el
+  catálogo montado. El 2026-11-03 a las 00:30 UTC, `/api/status` trajo los seis componentes `up`,
+  con `inside` en `no_data`. La imagen se baja de GHCR sin login (el manifiesto de `:latest`
+  contesta 200 con el token anónimo), así que no queda ningún paso de una vez de
+  [ADR-0017](adr/0017-como-se-publica.md).
+  Quedan dos ítems en el backlog de `infra`:
+  - I84: la etiqueta `stack` en `infra_contenedor_sano`, tomada de `com.docker.compose.project`
     ([ADR-0014](adr/0014-la-salud-de-adentro-llega-con-la-etiqueta-del-stack.md));
-  - el Custom Domain `status.nicolasdalessandro.dev`, importado en el OpenTofu de lectura
+  - I86: el Custom Domain `status.nicolasdalessandro.dev`, importado en el OpenTofu de lectura
     ([ADR-0017](adr/0017-como-se-publica.md)).
 
-  *Falta:* se piden como ítems en el backlog de `infra`. La etiqueta se puede pedir ya; el stack
-  del emisor, cuando exista la imagen (S10); el Custom Domain, cuando el usuario lo cree.
+  *Falta:* que `infra` los haga. Status no cambia nada para ninguno de los dos.
 - **El empaquetado del Worker en el gate.** ADR-0001 dice que se suma al gate cuando llegue el
   Worker, y el Worker llegó con S1. `wrangler deploy --dry-run --outdir <dir>` empaqueta sin tocar
   la cuenta, pero el protocolo (punto 0.4) dice "nada de `wrangler deploy`". *Falta:* que el
