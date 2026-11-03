@@ -1,7 +1,8 @@
 # ADR-0012 — La página es un archivo estático que arma el navegador, y el gate chequea tres programas de TypeScript
 
 - **Estado:** aceptado (propuesto por la iteración S2 del loop el 2026-11-02; confirmado por el
-  usuario el 2026-11-02)
+  usuario el 2026-11-02). La excepción de `/vista.mp4`, un archivo de `public/` que pasa primero por
+  el Worker, la propone [ADR-0019](0019-el-loop-del-hub-lo-sirve-el-worker-con-range.md)
 - **Fecha:** 2026-11-02
 - **Decide:** cómo se sirve la página, dónde vive su código, cómo se compila y se prueba, y cómo
   recuerda el idioma.
