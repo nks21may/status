@@ -194,7 +194,7 @@ Chequea tres programas de TypeScript: el de Node (`tsconfig.json`), el del Worke
 
 ### Lo que pidió el hub
 
-- [ ] **S13 — El Worker sirve el loop de vista previa del hub en `/vista.mp4`, y contesta `Range`.** *Depende de S2.*
+- [x] **S13 — El Worker sirve el loop de vista previa del hub en `/vista.mp4`, y contesta `Range`.** *Depende de S2.*
       *Test:* `public/vista.mp4` cumple el contrato del ADR-0010 del hub, leído de sus cajas: una
       sola pista, de video H.264, de 640×480, de hasta 8 s, y el archivo pesa hasta 1,5 MB.
       `wrangler.jsonc` manda `/vista.mp4`, y nada más, al Worker antes que a los archivos

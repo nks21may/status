@@ -1516,3 +1516,106 @@ GATE_EXIT=0
 ```
 
 **Sha:** `ddbc34f`
+
+## S13 — El Worker sirve el loop de vista previa del hub en `/vista.mp4`, y contesta `Range` · 2026-11-03
+
+**Archivos:**
+- Decisión, en su propio commit (`7ca0b1c`): `docs/adr/0019-el-loop-del-hub-lo-sirve-el-worker-con-range.md`,
+  el estado de ADR-0012 y el índice de ADR.
+- El loop: `public/vista.mp4`, y la herramienta que lo graba, `herramientas/grabar-vista.ts`, que
+  entra en el programa de Node del gate (`tsconfig.json`).
+- Código: `src/worker/vista.ts`, `src/worker/index.ts`, `src/worker/env.d.ts` y `wrangler.jsonc`.
+- Tests y documentación: `tests/vista.test.ts`, `tests/worker/vista.test.ts` y `README.md`.
+- En el commit siguiente: `docs/backlog.md` (el tilde) y esta entrada.
+
+**Gate:** `npm run gate`.
+
+**El pedido.** Vino de la sesión del hub, el 2026-11-03: el I87 de `infra` le sumó al stack `status`
+una ficha visible sin `vista`, y el hub la muestra con su relleno. Se siguió el camino de museo y de
+`bot_discord`, que contestan `Range` con 206 y graban su loop con el screencast de Chrome y ffmpeg.
+
+**ADR-0019**, propuesto, falta la confirmación del usuario. Los archivos estáticos no contestan
+`Range`: el 2026-11-03 dieron 200 con el archivo entero a `Range: bytes=0-99`, en producción
+(`curl` a `estilos.css` y a la tipografía) y en el workerd local (`env.ASSETS.fetch`, con un test
+descartable que no quedó en el árbol). Safari no reproduce un video sin 206, así que `/vista.mp4`, y
+nada más, pasa primero por el Worker.
+
+**Rojo**, el esperado, sin el archivo ni el código:
+
+```
+     × public/vista.mp4 cumple el contrato del hub: una sola pista, de video H.264, de 640×480, de hasta 8 s y hasta 1,5 MB 2ms
+     × el pedido de /vista.mp4, y ningún otro, pasa por el Worker antes que por los archivos estáticos 5ms
+     × sin Range contesta 200 con el video entero, cacheable y sin Cross-Origin-Resource-Policy 9ms
+     × con un Range contesta 206 con el tramo pedido y su Content-Range 1ms
+     × un Range que empieza después del final contesta 416 con el tamaño 0ms
+     × un Range que no entiende lo ignora y contesta el video entero 1ms
+     × a HEAD le contesta los encabezados del GET, sin el cuerpo 0ms
+AssertionError: public/vista.mp4: expected 404 to be 200 // Object.is equality
+Error: ENOENT: no such file or directory, open 'P:\status\public\vista.mp4'
+AssertionError: expected undefined to deeply equal [ '/vista.mp4' ]
+ Test Files  2 failed | 10 passed (12)
+      Tests  7 failed | 59 passed (66)
+```
+
+**El segundo rojo**, con `public/vista.mp4` grabado y sin el código del Worker. Es el que muestra que
+los tests ejercen lo que decide el ADR: los archivos estáticos contestan 200 a un `Range`, sin
+`Accept-Ranges`. El de un `Range` que no se entiende pasa, porque los estáticos ignoran todos:
+
+```
+     × el pedido de /vista.mp4, y ningún otro, pasa por el Worker antes que por los archivos estáticos 7ms
+     × sin Range contesta 200 con el video entero, cacheable y sin Cross-Origin-Resource-Policy 11ms
+     × con un Range contesta 206 con el tramo pedido y su Content-Range 4ms
+     × un Range que empieza después del final contesta 416 con el tamaño 3ms
+     × a HEAD le contesta los encabezados del GET, sin el cuerpo 2ms
+AssertionError: expected null to be 'bytes' // Object.is equality
+AssertionError: bytes=0-99: expected 200 to be 206 // Object.is equality
+AssertionError: expected 200 to be 416 // Object.is equality
+AssertionError: expected null to be 'bytes' // Object.is equality
+AssertionError: expected undefined to deeply equal [ '/vista.mp4' ]
+ Test Files  2 failed | 10 passed (12)
+      Tests  5 failed | 61 passed (66)
+```
+
+**En el camino.** La primera versión de `leerRango` daba 200 a `bytes=<total>-`: calculaba el fin
+(`total - 1`) antes de mirar el inicio, y lo tomaba como números al revés. El gate lo marcó
+(`expected 200 to be 416`) y el chequeo de "empieza después del final" pasó adelante. La primera
+grabación tenía otro error, de la herramienta: le daba a cada cuadro 1/30 s como mínimo, Chrome
+manda unos 50 por segundo, y el corte de la toma dejaba afuera el final del recorrido. Se vio en los
+cuadros sacados con ffmpeg.
+
+**La grabación**, de la página publicada:
+
+```
+recorrido de 1474 px sobre https://status.nicolasdalessandro.dev/
+322 cuadros en 6.37 s, de 7.2 s de toma
+crf 18: 304103 bytes
+listo P:\status\public\vista.mp4: crf 18, 304103 bytes, 7.6 s
+```
+
+ffprobe: `codec_name=h264|profile=Main|width=640|height=480|pix_fmt=yuv420p|r_frame_rate=30/1`, y una
+sola pista. El último cuadro contra el primero: `SSIM All:0.994441`.
+
+**El ruteo, con el router de verdad.** Los tests llaman al Worker directo (`exports.default.fetch`),
+así que `run_worker_first` lo fija el test que lee `wrangler.jsonc`. Para verlo andar, el Worker se
+levantó en proceso con `unstable_startWorker` de Wrangler, con un script descartable fuera del árbol:
+
+```
+/vista.mp4 {} 200 video/mp4 null bytes public, max-age=3600 304103
+/vista.mp4 {"Range":"bytes=0-99"} 206 video/mp4 bytes 0-99/304103 bytes public, max-age=3600 100
+/vista.mp4 {"Range":"bytes=-50"} 206 video/mp4 bytes 304053-304102/304103 bytes public, max-age=3600 50
+/estilos.css {"Range":"bytes=0-9"} 200 text/css; charset=utf-8 null null null 15187
+/ {} 200 text/html; charset=utf-8 null null public, max-age=0, must-revalidate 808
+```
+
+**Verde:**
+
+```
+GATE_EXIT=0
+ RUN  v4.1.12 P:/status
+ Test Files  12 passed (12)
+      Tests  66 passed (66)
+   Start at  10:19:25
+   Duration  1.43s (transform 463ms, setup 600ms, import 1.26s, tests 1.15s, environment 0ms)
+```
+
+**Sha:** `a6288c8`
